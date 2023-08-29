@@ -2,50 +2,37 @@ require 'pxlsrt/colors'
 require 'pxlsrt/lines'
 
 module Pxlsrt
-  ##
   # Methods not having to do with image or color manipulation.
-  class Helpers
-    ##
+  module Helpers
     # Determines if a value has content.
-    def self.contented(c)
+    def contented(c)
       !c.nil?
     end
 
-    ##
     # Used to output a red string to the terminal.
-    def self.red(what)
+    def red(what)
       "\e[31m#{what}\e[0m"
     end
 
-    ##
     # Used to output a cyan string to the terminal.
-    def self.cyan(what)
+    def cyan(what)
       "\e[36m#{what}\e[0m"
     end
 
-    ##
     # Used to output a yellow string to the terminal.
-    def self.yellow(what)
+    def yellow(what)
       "\e[33m#{what}\e[0m"
     end
 
-    ##
-    # Used to output a green string to the terminal.
-    def self.green(what)
-      "\e[32m#{what}\e[0m"
-    end
-
-    ##
     # Determines if a string can be a float or integer.
-    def self.isNumeric?(s)
+    def isNumeric?(s)
       true if Float(s)
     rescue
       false
     end
 
-    ##
     # Checks if supplied options follow the rules.
-    def self.checkOptions(options, rules)
+    def checkOptions(options, rules)
       match = true
       options.each_key do |o|
         o_match = false
@@ -74,9 +61,8 @@ module Pxlsrt
       match
     end
 
-    ##
     # Pixel sorting helper to eliminate repetition.
-    def self.handlePixelSort(band, o)
+    def handlePixelSort(band, o)
       if ((o[:reverse].class == String) && (o[:reverse].casecmp('reverse').zero? || (o[:reverse] == ''))) || (o[:reverse] == true)
         reverse = 1
       elsif (o[:reverse].class == String) && o[:reverse].casecmp('either').zero?
@@ -99,21 +85,18 @@ module Pxlsrt
       Pxlsrt::Lines.handleMiddlate(sortedBand, o[:middle])
     end
 
-    ##
     # Prints an error message.
-    def self.error(what)
+    def error(what)
       puts "#{red('pxlsrt')} #{what}"
     end
 
-    ##
     # Prints something.
-    def self.verbose(what)
+    def verbose(what)
       puts "#{cyan('pxlsrt')} #{what}"
     end
 
-    ##
     # Progress indication.
-    def self.progress(what, amount, outof)
+    def progress(what, amount, outof)
       progress = (amount.to_f * 100.0 / outof.to_f).to_i
       if progress == 100
         puts "\r#{green('pxlsrt')} #{what} (#{green("#{progress}%")})"
