@@ -1,7 +1,6 @@
-# coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'pxlsrt/version'
+# frozen_string_literal: true
+
+require './lib/pxlsrt/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'pxlsrt'
@@ -13,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/czycha/pxlsrt'
   spec.license       = 'MIT'
 
-  spec.files         = ['lib/pxlsrt.rb', 'lib/pxlsrt/colors.rb', 'lib/pxlsrt/helpers.rb', 'lib/pxlsrt/brute.rb', 'lib/pxlsrt/smart.rb', 'lib/pxlsrt/version.rb', 'lib/pxlsrt/lines.rb', 'lib/pxlsrt/image.rb', 'lib/pxlsrt/kim.rb', 'lib/pxlsrt/spiral.rb', 'lib/pxlsrt/seed.rb']
+  spec.files         = Dir['lib/**/*.rb']
   spec.executables   = ['pxlsrt']
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
