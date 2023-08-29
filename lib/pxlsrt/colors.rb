@@ -1,4 +1,5 @@
 require 'oily_png'
+require 'pxlsrt/helpers'
 
 module Pxlsrt
   ##

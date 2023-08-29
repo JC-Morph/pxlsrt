@@ -1,3 +1,5 @@
+require 'pxlsrt/helpers'
+
 module Pxlsrt
   ##
   # "Line" operations used on arrays f colors.

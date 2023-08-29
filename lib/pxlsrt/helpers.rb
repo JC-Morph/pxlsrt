@@ -1,3 +1,6 @@
+require 'pxlsrt/colors'
+require 'pxlsrt/lines'
+
 module Pxlsrt
   ##
   # Methods not having to do with image or color manipulation.

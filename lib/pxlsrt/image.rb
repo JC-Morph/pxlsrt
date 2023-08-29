@@ -1,3 +1,5 @@
+require 'pxlsrt/lines'
+
 module Pxlsrt
   ##
   # Image class for handling ChunkyPNG images.

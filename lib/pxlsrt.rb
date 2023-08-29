@@ -1,10 +1,3 @@
-require 'pxlsrt/version'
-require 'pxlsrt/helpers'
-require 'pxlsrt/lines'
-require 'pxlsrt/image'
-require 'pxlsrt/colors'
-require 'pxlsrt/brute'
-require 'pxlsrt/smart'
-require 'pxlsrt/kim'
-require 'pxlsrt/spiral'
-require 'pxlsrt/seed'
+%i[brute kim seed smart].each do |file|
+  require "pxlsrt/#{file}"
+end
