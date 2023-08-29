@@ -5,28 +5,13 @@ module Pxlsrt
   # Methods not having to do with image or color manipulation.
   module Helpers
     # Determines if a value has content.
-    def contented(c)
-      !c.nil?
-    end
-
-    # Used to output a red string to the terminal.
-    def red(what)
-      "\e[31m#{what}\e[0m"
-    end
-
-    # Used to output a cyan string to the terminal.
-    def cyan(what)
-      "\e[36m#{what}\e[0m"
-    end
-
-    # Used to output a yellow string to the terminal.
-    def yellow(what)
-      "\e[33m#{what}\e[0m"
+    def contented(value)
+      !value.nil?
     end
 
     # Determines if a string can be a float or integer.
-    def isNumeric?(s)
-      true if Float(s)
+    def isNumeric?(str)
+      true if Float(str)
     rescue
       false
     end
@@ -85,16 +70,6 @@ module Pxlsrt
       Pxlsrt::Lines.handleMiddlate(sortedBand, o[:middle])
     end
 
-    # Prints an error message.
-    def error(what)
-      puts "#{red('pxlsrt')} #{what}"
-    end
-
-    # Prints something.
-    def verbose(what)
-      puts "#{cyan('pxlsrt')} #{what}"
-    end
-
     # Progress indication.
     def progress(what, amount, outof)
       progress = (amount.to_f * 100.0 / outof.to_f).to_i
@@ -104,6 +79,23 @@ module Pxlsrt
         $stdout.write "\r#{yellow('pxlsrt')} #{what} (#{yellow("#{progress}%")})"
         $stdout.flush
       end
+    end
+
+    private
+
+    def error(str)
+      color = {error: :red, verbose: :cyan}[__callee__]
+      puts "#{send(color, 'pxlsrt')} #{str}" if options[:verbose]
+    end
+    alias_method :verbose, :error
+
+    def color_str(str)
+      "\e[#{color_index[__callee__]}m#{str}\e[0m"
+    end
+    color_index.keys.each {|color| alias_method color, :color_str }
+
+    def color_index
+      {cyan: 36, green: 32, red: 31, yellow: 33}
     end
   end
 end
