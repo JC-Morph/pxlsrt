@@ -4,18 +4,17 @@ require 'pxlsrt/helpers'
 require 'pxlsrt/spiral'
 
 module Pxlsrt
-  ##
   # Plant seeds, have them spiral out and sort.
   class Seed
-    ##
     # Uses Pxlsrt::Seed.seed to input and output from one method.
     def self.suite(inputFileName, outputFileName, o = {})
       kml = Pxlsrt::Seed.seed(inputFileName, o)
       kml.save(outputFileName) if Pxlsrt::Helpers.contented(kml)
     end
 
-    ##
-    # The main attraction of the Seed class. Returns a ChunkyPNG::Image that is sorted according to the options provided. Will raise any error that occurs.
+    # The main attraction of the Seed class. Returns a ChunkyPNG::Image that is
+    # sorted according to the options provided. Will raise any error that
+    # occurs.
     def self.seed(input, o = {})
       startTime = Time.now
       defOptions = {

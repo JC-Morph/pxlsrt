@@ -2,25 +2,24 @@ require 'oily_png'
 require 'pxlsrt/helpers'
 
 module Pxlsrt
-  ##
   # Includes color operations.
   class Colors
-    ##
     # List of sorting methods.
     METHODS = ['sum-rgb', 'red', 'green', 'blue', 'sum-hsb', 'hue', 'saturation', 'brightness', 'uniqueness', 'luma', 'random', 'cyan', 'magenta', 'yellow', 'alpha', 'sum-rgba', 'sum-hsba', 'none'].freeze
-    ##
-    # Converts a ChunkyPNG pixel into an array of the red, green, blue, and alpha values
+
+    # Converts a ChunkyPNG pixel into an array of the red, green, blue, and
+    # alpha values.
     def self.getRGBA(pxl)
       [ChunkyPNG::Color.r(pxl), ChunkyPNG::Color.g(pxl), ChunkyPNG::Color.b(pxl), ChunkyPNG::Color.a(pxl)]
     end
 
-    ##
-    # Check if file is a PNG image. ChunkyPNG only works with PNG images. Eventually, I might use conversion tools to add support, but not right now.
+    # Check if file is a PNG image. ChunkyPNG only works with PNG images.
+    # Eventually, I might use conversion tools to add support, but not right
+    # now.
     def self.isPNG?(path)
       File.open(path, 'rb').read(9).include?('PNG')
     end
 
-    ##
     # Averages an array of RGB-like arrays.
     def self.colorAverage(ca, chunky = false)
       return ca.first if ca.length == 1
@@ -40,7 +39,6 @@ module Pxlsrt
       end
     end
 
-    ##
     # Determines color distance from each other using the Pythagorean theorem.
     def self.colorDistance(c1, c2, chunky = false)
       if !chunky
@@ -50,13 +48,12 @@ module Pxlsrt
       end
     end
 
-    ##
-    # Uses a combination of color averaging and color distance to find how "unique" a color is.
+    # Uses a combination of color averaging and color distance to find how
+    # "unique" a color is.
     def self.colorUniqueness(c, ca, chunky = false)
       Pxlsrt::Colors.colorDistance(c, Pxlsrt::Colors.colorAverage(ca, chunky), chunky)
     end
 
-    ##
     # Sorts an array of colors based on a method.
     # Available methods:
     # * sum-rgb (default)
@@ -141,8 +138,7 @@ module Pxlsrt
       mhm
     end
 
-    ##
-    # Turns an RGB-like array into ChunkyPNG's color
+    # Turns an RGB-like array into ChunkyPNG's color.
     def self.arrayToRGBA(a)
       ChunkyPNG::Color.rgba(a[0], a[1], a[2], a[3])
     end
