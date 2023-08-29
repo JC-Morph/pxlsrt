@@ -5,7 +5,26 @@ module Pxlsrt
   # Includes color operations.
   class Colors
     # List of sorting methods.
-    METHODS = ['sum-rgb', 'red', 'green', 'blue', 'sum-hsb', 'hue', 'saturation', 'brightness', 'uniqueness', 'luma', 'random', 'cyan', 'magenta', 'yellow', 'alpha', 'sum-rgba', 'sum-hsba', 'none'].freeze
+    METHODS = %i[
+      sum-rgb
+      red
+      green
+      blue
+      sum-hsb
+      hue
+      saturation
+      brightness
+      uniqueness
+      luma
+      random
+      cyan
+      magenta
+      yellow
+      alpha
+      sum-rgba
+      sum-hsba
+      none
+    ].freeze
 
     # Converts a ChunkyPNG pixel into an array of the red, green, blue, and
     # alpha values.
