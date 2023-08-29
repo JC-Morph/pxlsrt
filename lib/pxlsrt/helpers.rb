@@ -102,13 +102,13 @@ module Pxlsrt
     ##
     # Prints an error message.
     def self.error(what)
-      puts "#{Pxlsrt::Helpers.red('pxlsrt')} #{what}"
+      puts "#{red('pxlsrt')} #{what}"
     end
 
     ##
     # Prints something.
     def self.verbose(what)
-      puts "#{Pxlsrt::Helpers.cyan('pxlsrt')} #{what}"
+      puts "#{cyan('pxlsrt')} #{what}"
     end
 
     ##
@@ -116,9 +116,9 @@ module Pxlsrt
     def self.progress(what, amount, outof)
       progress = (amount.to_f * 100.0 / outof.to_f).to_i
       if progress == 100
-        puts "\r#{Pxlsrt::Helpers.green('pxlsrt')} #{what} (#{Pxlsrt::Helpers.green("#{progress}%")})"
+        puts "\r#{green('pxlsrt')} #{what} (#{green("#{progress}%")})"
       else
-        $stdout.write "\r#{Pxlsrt::Helpers.yellow('pxlsrt')} #{what} (#{Pxlsrt::Helpers.yellow("#{progress}%")})"
+        $stdout.write "\r#{yellow('pxlsrt')} #{what} (#{yellow("#{progress}%")})"
         $stdout.flush
       end
     end

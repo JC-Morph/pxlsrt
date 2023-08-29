@@ -70,7 +70,7 @@ module Pxlsrt
     # Uses a combination of color averaging and color distance to find how
     # "unique" a color is.
     def self.colorUniqueness(c, ca, chunky = false)
-      Pxlsrt::Colors.colorDistance(c, Pxlsrt::Colors.colorAverage(ca, chunky), chunky)
+      colorDistance(c, colorAverage(ca, chunky), chunky)
     end
 
     # Sorts an array of colors based on a method.
@@ -137,8 +137,8 @@ module Pxlsrt
           k * ((hsb[0] % 360) / 360.0 + hsb[1] + hsb[2] + ChunkyPNG::Color.a(c) / 255.0)
         end
       when 'uniqueness'
-        avg = Pxlsrt::Colors.colorAverage(list, true)
-        mhm = list.sort_by { |c| k * Pxlsrt::Colors.colorUniqueness(c, [avg], true) }
+        avg = colorAverage(list, true)
+        mhm = list.sort_by { |c| k * colorUniqueness(c, [avg], true) }
       when 'luma'
         mhm = list.sort_by { |c| k * (ChunkyPNG::Color.r(c) * 0.2126 + ChunkyPNG::Color.g(c) * 0.7152 + ChunkyPNG::Color.b(c) * 0.0722 + ChunkyPNG::Color.a(c)) }
       when 'random'
