@@ -66,6 +66,7 @@ module Pxlsrt
 
     # Progress indication.
     def progress(what, amount, outof)
+      return unless options[:verbose]
       progress = (amount.to_f * 100.0 / outof.to_f).to_i
       if progress == 100
         puts "\r#{green('pxlsrt')} #{what} (#{green("#{progress}%")})"
