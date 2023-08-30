@@ -1,28 +1,16 @@
 require 'oily_png'
 require 'pxlsrt/colors'
-require 'pxlsrt/helpers'
+require 'pxlsrt/sort_class'
 
 module Pxlsrt
   # Brute sorting creates bands for sorting using a range to determine the
   # bandwidths, as opposed to smart sorting which uses edge-finding to create
   # bands.
-  class Brute
-    extend Pxlsrt::Helpers
-
-    def self.options
-      @options
-    end
-
-    # Uses Pxlsrt::Brute.brute to input and output from one method.
-    def self.suite(inputFileName, outputFileName, o = {})
-      kml = Pxlsrt::Brute.brute(inputFileName, o)
-      kml.save(outputFileName) if contented(kml)
-    end
-
-    def self.brute(input, o = {})
+  class Brute < SortClass
     # The main attraction of the Brute class. Returns a ChunkyPNG::Image that
     # is sorted according to the options provided. Will raise any error that
     # occurs.
+    def self.call(input, o = {})
       startTime = Time.now
       defOptions = {
         reverse: false,

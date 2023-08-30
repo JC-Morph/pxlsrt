@@ -1,27 +1,15 @@
 require 'oily_png'
 require 'pxlsrt/colors'
-require 'pxlsrt/helpers'
+require 'pxlsrt/sort_class'
 require 'pxlsrt/spiral'
 
 module Pxlsrt
   # Plant seeds, have them spiral out and sort.
-  class Seed
-    extend Pxlsrt::Helpers
-
-    def self.options
-      @options
-    end
-
-    # Uses Pxlsrt::Seed.seed to input and output from one method.
-    def self.suite(inputFileName, outputFileName, o = {})
-      kml = Pxlsrt::Seed.seed(inputFileName, o)
-      kml.save(outputFileName) if contented(kml)
-    end
-
+  class Seed < SortClass
     # The main attraction of the Seed class. Returns a ChunkyPNG::Image that is
     # sorted according to the options provided. Will raise any error that
     # occurs.
-    def self.seed(input, o = {})
+    def self.call(input, o = {})
       startTime = Time.now
       defOptions = {
         reverse: false,

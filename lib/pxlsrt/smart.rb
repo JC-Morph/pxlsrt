@@ -1,30 +1,17 @@
 require 'oily_png'
 require 'pxlsrt/colors'
 require 'pxlsrt/image'
-require 'pxlsrt/helpers'
+require 'pxlsrt/sort_class'
 
 module Pxlsrt
   # Smart sorting uses sorted-finding algorithms to create bands to sort,
   # as opposed to brute sorting which doesn't care for the content or
   # sorteds, just a specified range to create bands.
-  class Smart
-    extend Pxlsrt::Helpers
-
-    def self.options
-      @options
-    end
-
-    # Uses Pxlsrt::Smart.smart to input and output from pne method.
-    def self.suite(inputFileName, outputFileName, o = {})
-      kml = smart(inputFileName, o)
-      kml.save(outputFileName) if contented(kml)
-    end
-
-    ##
+  class Smart < SortClass
     # The main attraction of the Smart class. Returns a ChunkyPNG::Image that is
     # sorted according to the options provided. Will raise any error that
     # occurs.
-    def self.smart(input, o = {})
+    def self.call(input, o = {})
       startTime = Time.now
       defOptions = {
         reverse: false,

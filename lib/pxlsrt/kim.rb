@@ -1,28 +1,16 @@
 require 'oily_png'
 require 'pxlsrt/colors'
-require 'pxlsrt/helpers'
 require 'pxlsrt/image'
+require 'pxlsrt/sort_class'
 
 module Pxlsrt
   # Uses Kim Asendorf's pixel sorting algorithm, orginally written in
   # Processing. https://github.com/kimasendorf/ASDFPixelSort
-  class Kim
-    extend Pxlsrt::Helpers
-
-    def self.options
-      @options
-    end
-
-    # Uses Pxlsrt::Kim.kim to input and output from one method.
-    def self.suite(inputFileName, outputFileName, o = {})
-      kml = Pxlsrt::Kim.kim(inputFileName, o)
-      kml.save(outputFileName) if contented(kml)
-    end
-
+  class Kim < SortClass
     # The main attraction of the Kim class. Returns a ChunkyPNG::Image that is
     # sorted according to the options provided. Will raise any error that
     # occurs.
-    def self.kim(input, o = {})
+    def self.call(input, o = {})
       startTime = Time.now
       defOptions = {
         method: 'brightness',

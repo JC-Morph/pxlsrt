@@ -4,11 +4,6 @@ require 'pxlsrt/lines'
 module Pxlsrt
   # Methods not having to do with image or color manipulation.
   module Helpers
-    # Determines if a value has content.
-    def contented(value)
-      !value.nil?
-    end
-
     # Checks if supplied options follow the rules.
     def checkOptions(options, rules)
       match = true
