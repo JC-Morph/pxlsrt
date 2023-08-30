@@ -15,7 +15,7 @@ module Pxlsrt
       def call(input, o = {})
         startTime = Time.now
         @options = opt_defaults.merge(o)
-        if o.empty? || (options[:trusted] == true) || ((options[:trusted] == false) && !o.empty? && (checkOptions(options, opt_rules) != false))
+        if o.empty? || (options[:trusted] == true) || ((options[:trusted] == false) && !o.empty? && (check_options != false))
           verbose('Options are all good.')
           if input.class == String
             verbose('Getting image from file...')

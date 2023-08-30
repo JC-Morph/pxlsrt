@@ -5,10 +5,10 @@ module Pxlsrt
   # Methods not having to do with image or color manipulation.
   module Helpers
     # Checks if supplied options follow the rules.
-    def checkOptions(options, rules)
+    def check_options
       match = true
       options.each do |opt, val|
-        rule = rules[opt]
+        rule = opt_rules[opt]
         opt_match = false
         if rule.class == Array
           if rule.include?(val)
@@ -98,6 +98,12 @@ module Pxlsrt
       true if Float(str)
     rescue
       false
+    end
+
+    private
+
+    def opt_rules
+      raise NotImplementedError
     end
   end
 end
