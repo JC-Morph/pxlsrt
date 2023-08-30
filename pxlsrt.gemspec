@@ -23,4 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler', '~> 2.4.19'
   spec.add_development_dependency 'rake',    '~> 13.0.6'
+  # Test
+  spec.add_development_dependency 'aruba',    '~> 2.1.0'
+  spec.add_development_dependency 'cucumber', '~> 8.0.0'
 end
