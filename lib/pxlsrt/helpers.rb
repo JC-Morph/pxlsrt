@@ -19,28 +19,29 @@ module Pxlsrt
     # Checks if supplied options follow the rules.
     def checkOptions(options, rules)
       match = true
-      options.each_key do |o|
-        o_match = false
-        if rules[o].class == Array
-          if rules[o].include?(options[o])
-            o_match = true
+      options.each do |opt, val|
+        rule = rules[opt]
+        opt_match = false
+        if rule.class == Array
+          if rule.include?(val)
+            opt_match = true
           else
-            (0...rules[o].length).each do |r|
-              if rules[o][r].class == Hash
-                rules[o][r][:class].each do |n|
-                  if n == options[o].class
-                    o_match = match
+            (0...rule.length).each do |r|
+              if rule[r].class == Hash
+                rule[r][:class].each do |n|
+                  if n == val.class
+                    opt_match = match
                     break
                   end
                 end
               end
-              break if o_match == true
+              break if opt_match == true
             end
           end
-        elsif rules[o] == :anything
-          o_match = true
+        elsif rule == :anything
+          opt_match = true
         end
-        match = (match && o_match)
+        match = (match && opt_match)
         break if match == false
       end
       match
