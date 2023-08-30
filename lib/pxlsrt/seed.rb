@@ -6,10 +6,16 @@ require 'pxlsrt/spiral'
 module Pxlsrt
   # Plant seeds, have them spiral out and sort.
   class Seed
+    extend Pxlsrt::Helpers
+
+    def self.options
+      @options
+    end
+
     # Uses Pxlsrt::Seed.seed to input and output from one method.
     def self.suite(inputFileName, outputFileName, o = {})
       kml = Pxlsrt::Seed.seed(inputFileName, o)
-      kml.save(outputFileName) if Pxlsrt::Helpers.contented(kml)
+      kml.save(outputFileName) if contented(kml)
     end
 
     # The main attraction of the Seed class. Returns a ChunkyPNG::Image that is
@@ -39,33 +45,33 @@ module Pxlsrt
         distance: [false, { class: [Integer] }],
         threshold: [{ class: [Float, Integer] }]
       }
-      options = defOptions.merge(o)
-      if o.empty? || (options[:trusted] == true) || ((options[:trusted] == false) && !o.empty? && (Pxlsrt::Helpers.checkOptions(options, defRules) != false))
+      @options = defOptions.merge(o)
+      if o.empty? || (options[:trusted] == true) || ((options[:trusted] == false) && !o.empty? && (checkOptions(options, defRules) != false))
         if input.class == String
-          Pxlsrt::Helpers.verbose('Getting image from file...') if options[:verbose]
+          verbose('Getting image from file...')
           if File.file?(input)
             if Pxlsrt::Colors.isPNG?(input)
               input = ChunkyPNG::Image.from_file(input)
             else
-              Pxlsrt::Helpers.error("File #{input} is not a valid PNG.") if options[:verbose]
+              error("File #{input} is not a valid PNG.")
               raise 'Invalid PNG'
             end
           else
-            Pxlsrt::Helpers.error("File #{input} doesn't exist!") if options[:verbose]
+            error("File #{input} doesn't exist!")
             raise "File doesn't exit"
           end
         elsif (input.class != String) && (input.class != ChunkyPNG::Image)
-          Pxlsrt::Helpers.error('Input is not a filename or ChunkyPNG::Image') if options[:verbose]
+          error('Input is not a filename or ChunkyPNG::Image')
           raise 'Invalid input (must be filename or ChunkyPNG::Image)'
         end
-        Pxlsrt::Helpers.verbose('Seed mode.') if options[:verbose]
-        Pxlsrt::Helpers.verbose('Creating Pxlsrt::Image object') if options[:verbose]
+        verbose('Seed mode.')
+        verbose('Creating Pxlsrt::Image object')
         png = Pxlsrt::Image.new(input)
         traversed = [false] * (png.getWidth * png.getHeight)
         count = 0
         seeds = []
         if options[:random] != false
-          Pxlsrt::Helpers.progress('Planting seeds', 0, options[:random]) if options[:verbose]
+          progress('Planting seeds', 0, options[:random])
           (0...options[:random]).each do |s|
             x = (0...png.getWidth).to_a.sample
             y = (0...png.getHeight).to_a.sample
@@ -78,10 +84,10 @@ module Pxlsrt
                          x: x,
                          y: y
                        })
-            Pxlsrt::Helpers.progress('Planting seeds', s + 1, options[:random]) if options[:verbose]
+            progress('Planting seeds', s + 1, options[:random])
           end
         else
-          Pxlsrt::Helpers.progress('Planting seeds', 0, png.getWidth * png.getHeight) if options[:verbose]
+          progress('Planting seeds', 0, png.getWidth * png.getHeight)
           kernel = [[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]]
           i = (png.getWidth + png.getHeight - 2) * 2
           (1...(png.getHeight - 1)).each do |y|
@@ -104,11 +110,11 @@ module Pxlsrt
                            })
               end
               i += 1
-              Pxlsrt::Helpers.progress('Planting seeds', i, png.getWidth * png.getHeight) if options[:verbose]
+              progress('Planting seeds', i, png.getWidth * png.getHeight)
             end
           end
           if options[:distance] != false
-            Pxlsrt::Helpers.progress('Removing seed clusters', 0, seeds.length) if options[:verbose]
+            progress('Removing seed clusters', 0, seeds.length)
             results = []
             i = 0
             seeds.each do |current|
@@ -119,7 +125,7 @@ module Pxlsrt
               end
               results.push(current) if add
               i += 1
-              Pxlsrt::Helpers.progress('Removing seed clusters', i, seeds.length) if options[:verbose]
+              progress('Removing seed clusters', i, seeds.length)
             end
             seeds = results
           end
@@ -128,9 +134,9 @@ module Pxlsrt
           traversed[seeds[r][:anchor][:x] + seeds[r][:anchor][:y] * png.getWidth] = r
           count += 1
         end
-        Pxlsrt::Helpers.verbose("Planted #{seeds.length} seeds") if options[:verbose]
+        verbose("Planted #{seeds.length} seeds")
         step = 0
-        Pxlsrt::Helpers.progress('Watch them grow!', count, traversed.length) if options[:verbose]
+        progress('Watch them grow!', count, traversed.length)
         while count < traversed.length && !seeds.empty?
           r = 0
           seeds.each do |seed|
@@ -166,33 +172,33 @@ module Pxlsrt
             r += 1
           end
           step += 1
-          Pxlsrt::Helpers.progress('Watch them grow!', count, traversed.length) if options[:verbose]
+          progress('Watch them grow!', count, traversed.length)
         end
-        Pxlsrt::Helpers.progress('Sort seeds and place pixels', 0, seeds.length) if options[:verbose]
+        progress('Sort seeds and place pixels', 0, seeds.length)
         r = 0
         seeds.each do |seed|
-          band = Pxlsrt::Helpers.handlePixelSort(seed[:pixels], options)
+          band = handlePixelSort(seed[:pixels], options)
           i = 0
           seed[:xy].each do |k|
             png[k[:x], k[:y]] = band[i]
             i += 1
           end
           r += 1
-          Pxlsrt::Helpers.progress('Sort seeds and place pixels', r, seeds.length) if options[:verbose]
+          progress('Sort seeds and place pixels', r, seeds.length)
         end
         endTime = Time.now
         timeElapsed = endTime - startTime
         if timeElapsed < 60
-          Pxlsrt::Helpers.verbose("Took #{timeElapsed.round(4)} second#{timeElapsed != 1.0 ? 's' : ''}.") if options[:verbose]
+          verbose("Took #{timeElapsed.round(4)} second#{timeElapsed != 1.0 ? 's' : ''}.")
         else
           minutes = (timeElapsed / 60).floor
           seconds = (timeElapsed % 60).round(4)
-          Pxlsrt::Helpers.verbose("Took #{minutes} minute#{minutes != 1 ? 's' : ''} and #{seconds} second#{seconds != 1.0 ? 's' : ''}.") if options[:verbose]
+          verbose("Took #{minutes} minute#{minutes != 1 ? 's' : ''} and #{seconds} second#{seconds != 1.0 ? 's' : ''}.")
         end
-        Pxlsrt::Helpers.verbose('Returning ChunkyPNG::Image...') if options[:verbose]
+        verbose('Returning ChunkyPNG::Image...')
         return png.returnModified
       else
-        Pxlsrt::Helpers.error('Options specified do not follow the correct format.') if options[:verbose]
+        error('Options specified do not follow the correct format.')
         raise 'Bad options'
       end
     end

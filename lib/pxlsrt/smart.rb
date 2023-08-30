@@ -8,10 +8,16 @@ module Pxlsrt
   # as opposed to brute sorting which doesn't care for the content or
   # sorteds, just a specified range to create bands.
   class Smart
+    extend Pxlsrt::Helpers
+
+    def self.options
+      @options
+    end
+
     # Uses Pxlsrt::Smart.smart to input and output from pne method.
     def self.suite(inputFileName, outputFileName, o = {})
       kml = smart(inputFileName, o)
-      kml.save(outputFileName) if Pxlsrt::Helpers.contented(kml)
+      kml.save(outputFileName) if contented(kml)
     end
 
     ##
@@ -44,42 +50,42 @@ module Pxlsrt
         trusted: [false, true],
         middle: :anything
       }
-      options = defOptions.merge(o)
-      if o.empty? || (options[:trusted] == true) || ((options[:trusted] == false) && !o.empty? && (Pxlsrt::Helpers.checkOptions(options, defRules) != false))
-        Pxlsrt::Helpers.verbose('Options are all good.') if options[:verbose]
+      @options = defOptions.merge(o)
+      if o.empty? || (options[:trusted] == true) || ((options[:trusted] == false) && !o.empty? && (checkOptions(options, defRules) != false))
+        verbose('Options are all good.')
         if input.class == String
-          Pxlsrt::Helpers.verbose('Getting image from file...') if options[:verbose]
+          verbose('Getting image from file...')
           if File.file?(input)
             if Pxlsrt::Colors.isPNG?(input)
               input = ChunkyPNG::Image.from_file(input)
             else
-              Pxlsrt::Helpers.error("File #{input} is not a valid PNG.") if options[:verbose]
+              error("File #{input} is not a valid PNG.")
               raise 'Invalid PNG'
             end
           else
-            Pxlsrt::Helpers.error("File #{input} doesn't exist!") if options[:verbose]
+            error("File #{input} doesn't exist!")
             raise "File doesn't exist"
           end
         elsif (input.class != String) && (input.class != ChunkyPNG::Image)
-          Pxlsrt::Helpers.error('Input is not a filename or ChunkyPNG::Image') if options[:verbose]
+          error('Input is not a filename or ChunkyPNG::Image')
           raise 'Invalid input (must be filename or ChunkyPNG::Image)'
         end
-        Pxlsrt::Helpers.verbose('Smart mode.') if options[:verbose]
+        verbose('Smart mode.')
         png = Pxlsrt::Image.new(input)
         if !options[:vertical] && !options[:diagonal]
-          Pxlsrt::Helpers.verbose('Retrieving rows') if options[:verbose]
+          verbose('Retrieving rows')
           lines = png.horizontalLines
         elsif options[:vertical] && !options[:diagonal]
-          Pxlsrt::Helpers.verbose('Retrieving columns') if options[:verbose]
+          verbose('Retrieving columns')
           lines = png.verticalLines
         elsif !options[:vertical] && options[:diagonal]
-          Pxlsrt::Helpers.verbose('Retrieving diagonals') if options[:verbose]
+          verbose('Retrieving diagonals')
           lines = png.diagonalLines
         elsif options[:vertical] && options[:diagonal]
-          Pxlsrt::Helpers.verbose('Retrieving diagonals') if options[:verbose]
+          verbose('Retrieving diagonals')
           lines = png.rDiagonalLines
         end
-        Pxlsrt::Helpers.verbose('Retrieving edges') if options[:verbose]
+        verbose('Retrieving edges')
         png.getSobels
         iterator = if !options[:diagonal]
                      0...(lines.length)
@@ -88,7 +94,7 @@ module Pxlsrt
                    end
         prr = 0
         len = iterator.to_a.length
-        Pxlsrt::Helpers.progress('Dividing and pixel sorting lines', prr, len) if options[:verbose]
+        progress('Dividing and pixel sorting lines', prr, len)
         iterator.each do |k|
           line = lines[k]
           divisions = []
@@ -120,7 +126,7 @@ module Pxlsrt
           newLine = []
           divisions.each do |band|
             newLine.concat(
-              Pxlsrt::Helpers.handlePixelSort(
+              handlePixelSort(
                 band.map { |sobelAndColor| sobelAndColor['color'] },
                 options
               )
@@ -134,21 +140,21 @@ module Pxlsrt
             png.replaceRDiagonal(k, newLine) if options[:vertical]
           end
           prr += 1
-          Pxlsrt::Helpers.progress('Dividing and pixel sorting lines', prr, len) if options[:verbose]
+          progress('Dividing and pixel sorting lines', prr, len)
         end
         endTime = Time.now
         timeElapsed = endTime - startTime
         if timeElapsed < 60
-          Pxlsrt::Helpers.verbose("Took #{timeElapsed.round(4)} second#{timeElapsed.round(4) != 1.0 ? 's' : ''}.") if options[:verbose]
+          verbose("Took #{timeElapsed.round(4)} second#{timeElapsed.round(4) != 1.0 ? 's' : ''}.")
         else
           minutes = (timeElapsed / 60).floor
           seconds = (timeElapsed % 60).round(4)
-          Pxlsrt::Helpers.verbose("Took #{minutes} minute#{minutes != 1 ? 's' : ''} and #{seconds} second#{seconds != 1.0 ? 's' : ''}.") if options[:verbose]
+          verbose("Took #{minutes} minute#{minutes != 1 ? 's' : ''} and #{seconds} second#{seconds != 1.0 ? 's' : ''}.")
         end
-        Pxlsrt::Helpers.verbose('Returning ChunkyPNG::Image...') if options[:verbose]
+        verbose('Returning ChunkyPNG::Image...')
         return png.returnModified
       else
-        Pxlsrt::Helpers.error('Options specified do not follow the correct format.') if options[:verbose]
+        error('Options specified do not follow the correct format.')
         raise 'Bad options'
       end
     end
