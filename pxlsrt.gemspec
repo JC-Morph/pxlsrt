@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
 
   # Dependencies
   spec.add_dependency 'oily_png', '~> 1.2.1'
-  spec.add_dependency 'thor',     '~> 0.18'
+  spec.add_dependency 'thor',     '~> 1.2.2'
 
   spec.add_development_dependency 'bundler', '~> 2.4.19'
   spec.add_development_dependency 'rake',    '~> 13.0.6'
