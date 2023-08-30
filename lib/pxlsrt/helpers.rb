@@ -9,13 +9,6 @@ module Pxlsrt
       !value.nil?
     end
 
-    # Determines if a string can be a float or integer.
-    def isNumeric?(str)
-      true if Float(str)
-    rescue
-      false
-    end
-
     # Checks if supplied options follow the rules.
     def checkOptions(options, rules)
       match = true
@@ -82,21 +75,33 @@ module Pxlsrt
       end
     end
 
-    private
+    module_function
+
+    def options
+      {verbose: true}
+    end
 
     def error(str)
+      return unless options[:verbose]
       color = {error: :red, verbose: :cyan}[__callee__]
-      puts "#{send(color, 'pxlsrt')} #{str}" if options[:verbose]
+      puts "#{send(color, 'pxlsrt')} #{str}"
     end
     alias_method :verbose, :error
+
+    def color_index
+      {cyan: 36, green: 32, red: 31, yellow: 33}
+    end
 
     def color_str(str)
       "\e[#{color_index[__callee__]}m#{str}\e[0m"
     end
     color_index.keys.each {|color| alias_method color, :color_str }
 
-    def color_index
-      {cyan: 36, green: 32, red: 31, yellow: 33}
+    # Determines if a string can be a float or integer.
+    def isNumeric?(str)
+      true if Float(str)
+    rescue
+      false
     end
   end
 end
