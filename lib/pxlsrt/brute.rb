@@ -27,7 +27,7 @@ module Pxlsrt
               error("File #{input} doesn't exist!")
               raise "File doesn't exist"
             end
-          elsif (input.class != String) && (input.class != ChunkyPNG::Image)
+          elsif input.class != ChunkyPNG::Image
             error('Input is not a filename or ChunkyPNG::Image')
             raise 'Invalid input (must be filename or ChunkyPNG::Image)'
           end
