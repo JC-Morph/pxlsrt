@@ -36,16 +36,16 @@ module Pxlsrt
           png = Pxlsrt::Image.new(input)
           if !options[:vertical] && !options[:diagonal]
             verbose('Retrieving rows')
-            lines = png.horizontalLines
+            lines = png.rows
           elsif options[:vertical] && !options[:diagonal]
             verbose('Retrieving columns')
-            lines = png.verticalLines
+            lines = png.columns
           elsif !options[:vertical] && options[:diagonal]
             verbose('Retrieving diagonals')
-            lines = png.diagonalLines
+            lines = png.diagonals
           elsif options[:vertical] && options[:diagonal]
             verbose('Retrieving diagonals')
-            lines = png.rDiagonalLines
+            lines = png.diagonals(reverse: true)
           end
           iterator = if !options[:diagonal]
                        0...(lines.length)
@@ -64,8 +64,8 @@ module Pxlsrt
               newLine.concat(handlePixelSort(band, options))
             end
             if !options[:diagonal]
-              png.replaceHorizontal(k, newLine) unless options[:vertical]
-              png.replaceVertical(k, newLine) if options[:vertical]
+              png.replace_rows(k, newLine) unless options[:vertical]
+              png.replace_columns(k, newLine) if options[:vertical]
             else
               png.replaceDiagonal(k, newLine) unless options[:vertical]
               png.replaceRDiagonal(k, newLine) if options[:vertical]

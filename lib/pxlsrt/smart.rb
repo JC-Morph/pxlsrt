@@ -35,19 +35,19 @@ module Pxlsrt
           png = Pxlsrt::Image.new(input)
           if !options[:vertical] && !options[:diagonal]
             verbose('Retrieving rows')
-            lines = png.horizontalLines
+            lines = png.rows
           elsif options[:vertical] && !options[:diagonal]
             verbose('Retrieving columns')
-            lines = png.verticalLines
+            lines = png.columns
           elsif !options[:vertical] && options[:diagonal]
             verbose('Retrieving diagonals')
-            lines = png.diagonalLines
+            lines = png.diagonals
           elsif options[:vertical] && options[:diagonal]
             verbose('Retrieving diagonals')
-            lines = png.rDiagonalLines
+            lines = png.diagonals(reverse: true)
           end
           verbose('Retrieving edges')
-          png.getSobels
+          png.sobels
           iterator = if !options[:diagonal]
                        0...(lines.length)
                      else
@@ -63,9 +63,9 @@ module Pxlsrt
             if line.length > 1
               (0...line.length).each do |pixel|
                 if !options[:vertical] && !options[:diagonal]
-                  xy = png.horizontalXY(k, pixel)
+                  xy = png.horizontal_coords(k, pixel)
                 elsif options[:vertical] && !options[:diagonal]
-                  xy = png.verticalXY(k, pixel)
+                  xy = png.vertical_coords(k, pixel)
                 elsif !options[:vertical] && options[:diagonal]
                   xy = png.diagonalXY(k, pixel)
                 elsif options[:vertical] && options[:diagonal]
@@ -94,8 +94,8 @@ module Pxlsrt
               )
             end
             if !options[:diagonal]
-              png.replaceHorizontal(k, newLine) unless options[:vertical]
-              png.replaceVertical(k, newLine) if options[:vertical]
+              png.replace_rows(k, newLine) unless options[:vertical]
+              png.replace_columns(k, newLine) if options[:vertical]
             else
               png.replaceDiagonal(k, newLine) unless options[:vertical]
               png.replaceRDiagonal(k, newLine) if options[:vertical]

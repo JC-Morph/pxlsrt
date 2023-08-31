@@ -22,19 +22,19 @@ module Pxlsrt
 
     # Retrieve a multidimensional array consisting of the horizontal lines (row)
     # of the image.
-    def horizontalLines
-      (0...@height).inject([]) { |arr, row| arr << @modified.row(row) }
+    def rows
+      (0...height).inject([]) {|arr, row| arr << modified.row(row) }
     end
 
     # Replace a horizontal line (row) of the image.
-    def replaceHorizontal(y, arr)
-      @modified.replace_row!(y, arr)
-      @modified
+    def replace_rows(y, arr)
+      modified.replace_row!(y, arr)
+      modified
     end
 
     # Retrieve the x and y coordinates of a pixel based on the multidimensional
-    # array created using the horizontalLines method.
-    def horizontalXY(horizontal, index)
+    # array created using the #rows method.
+    def horizontal_coords(horizontal, index)
       {
         'x' => index.to_i,
         'y' => horizontal.to_i
@@ -43,44 +43,40 @@ module Pxlsrt
 
     # Retrieve a multidimensional array consisting of the vertical lines of the
     # image.
-    def verticalLines
-      (0...@width).inject([]) { |arr, column| arr << @modified.column(column) }
+    def columns
+      (0...width).inject([]) {|arr, column| arr << modified.column(column) }
     end
 
     ##
     # Replace a vertical line (column) of the image.
-    def replaceVertical(y, arr)
-      @modified.replace_column!(y, arr)
-      @modified
+    def replace_columns(y, arr)
+      modified.replace_column!(y, arr)
+      modified
     end
 
     # Retrieve the x and y coordinates of a pixel based on the multidimensional
-    # array created using the verticalLines method.
-    def verticalXY(vertical, index)
+    # array created using the #columns method.
+    def vertical_coords(vertical, index)
       {
         'x' => vertical.to_i,
         'y' => index.to_i
       }
     end
 
-    # Retrieve a hash consisting of the diagonal lines
-    # (top left to bottom right) of the image.
-    def diagonalLines
-      Pxlsrt::Lines.getDiagonals(horizontalLines.flatten(1), @width, @height)
-    end
-
-    # Retrieve a hash consisting of the diagonal lines
-    # (bottom left to top right) of the image.
-    def rDiagonalLines
-      Pxlsrt::Lines.getDiagonals(horizontalLines.reverse.flatten(1).reverse, @width, @height)
+    # Retrieve a hash consisting of the diagonal lines of the image.
+    # (Top left -> Bottom right), reverse option for (Bottom left -> Top right).
+    def diagonals(reverse: false)
+      flat_rows = reverse ? rows.reverse.flatten(1).reverse : rows.flatten(1)
+      Pxlsrt::Lines.getDiagonals(flat_rows, width, height)
     end
 
     # Get the column and row based on the diagonal hash created using
-    # diagonalLines.
-    def diagonalColumnRow(d, i)
+    # the #diagonals method.
+    def diagonal_coords(diag, idx)
+      diag = diag.to_i
       {
-        'column' => (d.to_i < 0 ? i : d.to_i + i).to_i,
-        'row' => (d.to_i < 0 ? d.to_i.abs + i : i).to_i
+        'x' => diag < 0 ? idx : (diag + idx),
+        'y' => diag < 0 ? (diag.abs + idx) : idx
       }
     end
 
@@ -103,29 +99,22 @@ module Pxlsrt
     end
 
     # Retrieve the x and y coordinates of a pixel based on the hash created
-    # using the diagonalLines method and the column and row of the
-    # diagonalColumnRow method.
+    # using the #diagonals method and the column and row of the
+    # #diagonal_coords method.
     def diagonalXY(d, i)
-      cr = diagonalColumnRow(d, i)
-      {
-        'x' => cr['column'],
-        'y' => cr['row']
-      }
+      diagonal_coords(d, i)
     end
 
     # Retrieve the x and y coordinates of a pixel based on the hash created
-    # using the rDiagonalLines method and the column and row of the
-    # diagonalColumnRow method.
+    # using the #diagonals method with reverse and the column and row of the
+    # #diagonal_coords method.
     def rDiagonalXY(d, i)
-      cr = diagonalColumnRow(d, i)
-      {
-        'x' => @width - 1 - cr['column'],
-        'y' => cr['row']
-      }
+      coords = diagonal_coords(d, i)
+      coords.merge({'x' => width - 1 - coords['x']})
     end
 
     # Retrieve Sobel value for a given pixel.
-    def getSobel(x, y)
+    def compute_sobel(x, y)
       if !defined?(@sobels)
         @sobel_x ||= [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]]
         @sobel_y ||= [[-1, -2, -1], [0, 0, 0], [1, 2, 1]]
@@ -148,22 +137,17 @@ module Pxlsrt
     end
 
     # Retrieve the Sobel values for every pixel and set it as @sobel.
-    def getSobels
-      unless defined?(@sobels)
-        l = []
-        (0...(@width * @height)).each do |xy|
-          s = getSobel(xy % @width, (xy / @width).floor)
-          l.push(s)
-        end
-        @sobels = l
+    def sobels
+      @sobels ||= (0...(width * height)).each.with_object([]) do |xy, arr|
+        sobel = compute_sobel(xy % width, (xy / width).floor)
+        arr << sobel
       end
-      @sobels
     end
 
     # Retrieve the Sobel value and color of a pixel.
     def getSobelAndColor(x, y)
       {
-        'sobel' => getSobel(x, y),
+        'sobel' => compute_sobel(x, y),
         'color' => self[x, y]
       }
     end
