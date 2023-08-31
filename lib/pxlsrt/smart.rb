@@ -1,6 +1,3 @@
-require 'oily_png'
-require 'pxlsrt/colors'
-require 'pxlsrt/image'
 require 'pxlsrt/sort_class'
 
 module Pxlsrt

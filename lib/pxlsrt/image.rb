@@ -1,3 +1,4 @@
+require 'oily_png'
 require 'pxlsrt/lines'
 
 module Pxlsrt

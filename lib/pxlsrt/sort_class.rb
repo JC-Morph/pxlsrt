@@ -1,4 +1,6 @@
+require 'pxlsrt/colors'
 require 'pxlsrt/helpers'
+require 'pxlsrt/image'
 
 module Pxlsrt
   class SortClass
