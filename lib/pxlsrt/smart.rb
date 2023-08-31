@@ -10,7 +10,6 @@ module Pxlsrt
       # is sorted according to the options provided. Will raise any error that
       # occurs.
       def call(input, o = {})
-        startTime = Time.now
         @options = opt_defaults.merge(o)
         if o.empty? || (options[:trusted] == true) || ((options[:trusted] == false) && !o.empty? && (check_options != false))
           verbose('Options are all good.')
@@ -102,15 +101,6 @@ module Pxlsrt
             end
             prr += 1
             progress('Dividing and pixel sorting lines', prr, len)
-          end
-          endTime = Time.now
-          timeElapsed = endTime - startTime
-          if timeElapsed < 60
-            verbose("Took #{timeElapsed.round(4)} second#{timeElapsed.round(4) != 1.0 ? 's' : ''}.")
-          else
-            minutes = (timeElapsed / 60).floor
-            seconds = (timeElapsed % 60).round(4)
-            verbose("Took #{minutes} minute#{minutes != 1 ? 's' : ''} and #{seconds} second#{seconds != 1.0 ? 's' : ''}.")
           end
           verbose('Returning ChunkyPNG::Image...')
           return png.modified

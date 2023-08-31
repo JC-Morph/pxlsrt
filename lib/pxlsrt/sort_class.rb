@@ -8,8 +8,11 @@ module Pxlsrt
 
     class << self
       def suite(input_filename, output_filename, opts = {})
-        kml = call(input_filename, opts)
-        kml.save(output_filename) unless kml.nil?
+        start_time = Time.now
+        sorted     = call(input_filename, opts)
+        end_time   = Time.now
+        time_report start_time
+        sorted.save output_filename
       end
 
       def options
@@ -17,6 +20,27 @@ module Pxlsrt
       end
 
       private
+
+      def time_report(start_time, end_time)
+        return unless options[:verbose]
+        elapsed = end_time - start_time
+        report  = elapsed < 60 ?
+          "Took #{elapsed.round(4)} second#{time_plural(elapsed)}." :
+          minutes_and_seconds(elapsed)
+        verbose report
+      end
+
+      def time_plural(elapsed)
+        elapsed == 1 ? '' : 's'
+      end
+
+      def minutes_and_seconds(elapsed)
+        minutes = (elapsed / 60).floor
+        minutes = "#{minutes} minute#{time_plural(minutes)}"
+        seconds = (elapsed % 60).round(4)
+        seconds = "#{seconds} second#{time_plural(seconds)}"
+        "Took #{minutes} and #{seconds}."
+      end
 
       def common_defaults
         {
