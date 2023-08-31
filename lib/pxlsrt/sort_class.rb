@@ -9,15 +9,19 @@ module Pxlsrt
     class << self
       def suite(input, output_filename, opts = {})
         def_options(opts)
+        check_input(input)
         start_time = Time.now
-        sorted     = call(input)
+        call.save output_filename
         end_time   = Time.now
         time_report(start_time, end_time)
-        sorted.save output_filename
       end
 
       def options
         @options
+      end
+
+      def png
+        @png
       end
 
       private
@@ -32,6 +36,37 @@ module Pxlsrt
       def option_error
         error 'Options specified do not follow the correct format.'
         raise 'Bad options'
+      end
+
+      def check_input(input)
+        @png = input
+        input_type_error unless [String, ChunkyPNG::Image].include?(png.class)
+        return initialize_png unless png.class == String
+        input_existence_error unless File.exists?(png)
+        verbose 'Getting image from file...'
+        input_png_error unless Pxlsrt::Colors.isPNG?(png)
+        @png = ChunkyPNG::Image.from_file(png)
+        initialize_png
+      end
+
+      def initialize_png
+        verbose 'Creating Pxlsrt::Image object'
+        @png = Pxlsrt::Image.new(png)
+      end
+
+      def input_type_error
+        error "#{png} is not a filename or ChunkyPNG::Image"
+        raise 'Invalid input (must be filename or ChunkyPNG::Image)'
+      end
+
+      def input_existence_error
+        error "#{png} doesn't exist!"
+        raise "File doesn't exist"
+      end
+
+      def input_png_error
+        error "#{png} is not a valid PNG."
+        raise 'Invalid PNG'
       end
 
       def time_report(start_time, end_time)
