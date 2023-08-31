@@ -31,6 +31,11 @@ Feature: Brute pixelsorting
 		Then the file "test-output.png" should exist
 		And the file "test-output.png" should be equal to file "example-brute-diagonal.png"
 
+	Scenario: Diagonal option with vertical option
+		When I run `pxlsrt brute test-input.png test-output.png --diagonal --vertical`
+		Then the file "test-output.png" should exist
+		And the file "test-output.png" should be equal to file "example-brute-diagonal-vertical.png"
+
 	Scenario: Middle option
 		When I run `pxlsrt brute test-input.png test-output.png --middle`
 		Then the file "test-output.png" should exist
