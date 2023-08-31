@@ -7,11 +7,12 @@ module Pxlsrt
     extend Pxlsrt::Helpers
 
     class << self
-      def suite(input_filename, output_filename, opts = {})
+      def suite(input, output_filename, opts = {})
+        def_options(opts)
         start_time = Time.now
-        sorted     = call(input_filename, opts)
+        sorted     = call(input)
         end_time   = Time.now
-        time_report start_time
+        time_report(start_time, end_time)
         sorted.save output_filename
       end
 
@@ -20,6 +21,18 @@ module Pxlsrt
       end
 
       private
+
+      def def_options(opts)
+        @options = opt_defaults.merge(opts)
+        valid    = opts.empty? || options[:trusted] || (check_options == false)
+        option_error unless valid
+        verbose 'Options are all good.'
+      end
+
+      def option_error
+        error 'Options specified do not follow the correct format.'
+        raise 'Bad options'
+      end
 
       def time_report(start_time, end_time)
         return unless options[:verbose]
