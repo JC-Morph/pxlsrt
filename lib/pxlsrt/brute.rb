@@ -83,7 +83,7 @@ module Pxlsrt
             verbose("Took #{minutes} minute#{minutes != 1 ? 's' : ''} and #{seconds} second#{seconds != 1.0 ? 's' : ''}.")
           end
           verbose('Returning ChunkyPNG::Image...')
-          return png.returnModified
+          return png.modified
         else
           error('Options specified do not follow the correct format.')
           raise 'Bad options'

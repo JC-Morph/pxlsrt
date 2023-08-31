@@ -37,12 +37,12 @@ module Pxlsrt
           options[:value] ||= ChunkyPNG::Color.rgba(11, 220, 0, 1) if options[:method] == 'black'
           options[:value] ||= 60 if options[:method] == 'brightness'
           options[:value] ||= ChunkyPNG::Color.rgba(57, 167, 192, 1) if options[:method] == 'white'
-          progress('Sorting columns', column, png.getWidth)
-          while column < png.getWidth
+          progress('Sorting columns', column, png.width)
+          while column < png.width
             x = column
             y = 0
             yend = 0
-            while yend < png.getHeight
+            while yend < png.height
               case options[:method]
               when 'black'
                 y = getFirstNotBlackY(png, x, y, options[:value])
@@ -68,14 +68,14 @@ module Pxlsrt
               y = yend + 1
             end
             column += 1
-            progress('Sorting columns', column, png.getWidth)
+            progress('Sorting columns', column, png.width)
           end
-          progress('Sorting rows', row, png.getHeight)
-          while row < png.getHeight
+          progress('Sorting rows', row, png.height)
+          while row < png.height
             x = 0
             y = row
             xend = 0
-            while xend < png.getWidth
+            while xend < png.width
               case options[:method]
               when 'black'
                 x = getFirstNotBlackX(png, x, y, options[:value])
@@ -101,7 +101,7 @@ module Pxlsrt
               x = xend + 1
             end
             row += 1
-            progress('Sorting rows', row, png.getHeight)
+            progress('Sorting rows', row, png.height)
           end
           endTime = Time.now
           timeElapsed = endTime - startTime
@@ -113,7 +113,7 @@ module Pxlsrt
             verbose("Took #{minutes} minute#{minutes != 1 ? 's' : ''} and #{seconds} second#{seconds != 1.0 ? 's' : ''}.")
           end
           verbose('Returning ChunkyPNG::Image...')
-          return png.returnModified
+          return png.modified
         else
           error('Options specified do not follow the correct format.')
           raise 'Bad options'
@@ -123,20 +123,20 @@ module Pxlsrt
       # Helper methods
       # Black
       def getFirstNotBlackX(img, x, y, blackValue)
-        if x < img.getWidth
+        if x < img.width
           while img[x, y] < blackValue
             x += 1
-            return -1 if x >= img.getWidth
+            return -1 if x >= img.width
           end
         end
         x
       end
 
       def getFirstNotBlackY(img, x, y, blackValue)
-        if y < img.getHeight
+        if y < img.height
           while img[x, y] < blackValue
             y += 1
-            return -1 if y >= img.getHeight
+            return -1 if y >= img.height
           end
         end
         y
@@ -144,10 +144,10 @@ module Pxlsrt
 
       def getNextBlackX(img, x, y, blackValue)
         x += 1
-        if x < img.getWidth
+        if x < img.width
           while img[x, y] > blackValue
             x += 1
-            return (img.getWidth - 1) if x >= img.getWidth
+            return (img.width - 1) if x >= img.width
           end
         end
         x - 1
@@ -155,10 +155,10 @@ module Pxlsrt
 
       def getNextBlackY(img, x, y, blackValue)
         y += 1
-        if y < img.getHeight
+        if y < img.height
           while img[x, y] > blackValue
             y += 1
-            return (img.getHeight - 1) if y >= img.getHeight
+            return (img.height - 1) if y >= img.height
           end
         end
         y - 1
@@ -166,20 +166,20 @@ module Pxlsrt
 
       # Brightness
       def getFirstBrightX(img, x, y, brightnessValue)
-        if x < img.getWidth
+        if x < img.width
           while ChunkyPNG::Color.to_hsb(img[x, y])[2] * 255 < brightnessValue
             x += 1
-            return -1 if x >= img.getWidth
+            return -1 if x >= img.width
           end
         end
         x
       end
 
       def getFirstBrightY(img, x, y, brightnessValue)
-        if y < img.getHeight
+        if y < img.height
           while ChunkyPNG::Color.to_hsb(img[x, y])[2] * 255 < brightnessValue
             y += 1
-            return -1 if y >= img.getHeight
+            return -1 if y >= img.height
           end
         end
         y
@@ -187,10 +187,10 @@ module Pxlsrt
 
       def getNextDarkX(img, x, y, brightnessValue)
         x += 1
-        if x < img.getWidth
+        if x < img.width
           while ChunkyPNG::Color.to_hsb(img[x, y])[2] * 255 > brightnessValue
             x += 1
-            return (img.getWidth - 1) if x >= img.getWidth
+            return (img.width - 1) if x >= img.width
           end
         end
         x - 1
@@ -198,10 +198,10 @@ module Pxlsrt
 
       def getNextDarkY(img, x, y, brightnessValue)
         y += 1
-        if y < img.getHeight
+        if y < img.height
           while ChunkyPNG::Color.to_hsb(img[x, y])[2] * 255 > brightnessValue
             y += 1
-            return (img.getHeight - 1) if y >= img.getHeight
+            return (img.height - 1) if y >= img.height
           end
         end
         y - 1
@@ -209,20 +209,20 @@ module Pxlsrt
 
       # White
       def getFirstNotWhiteX(img, x, y, whiteValue)
-        if x < img.getWidth
+        if x < img.width
           while img[x, y] > whiteValue
             x += 1
-            return -1 if x >= img.getWidth
+            return -1 if x >= img.width
           end
         end
         x
       end
 
       def getFirstNotWhiteY(img, x, y, whiteValue)
-        if y < img.getHeight
+        if y < img.height
           while img[x, y] > whiteValue
             y += 1
-            return -1 if y >= img.getHeight
+            return -1 if y >= img.height
           end
         end
         y
@@ -230,10 +230,10 @@ module Pxlsrt
 
       def getNextWhiteX(img, x, y, whiteValue)
         x += 1
-        if x < img.getWidth
+        if x < img.width
           while img[x, y] < whiteValue
             x += 1
-            return (img.getWidth - 1) if x >= img.getWidth
+            return (img.width - 1) if x >= img.width
           end
         end
         x - 1
@@ -241,10 +241,10 @@ module Pxlsrt
 
       def getNextWhiteY(img, x, y, whiteValue)
         y += 1
-        if y < img.getHeight
+        if y < img.height
           while img[x, y] < whiteValue
             y += 1
-            return (img.getHeight - 1) if y >= img.getHeight
+            return (img.height - 1) if y >= img.height
           end
         end
         y - 1

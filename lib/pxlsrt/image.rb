@@ -1,17 +1,21 @@
+require 'forwardable'
 require 'oily_png'
 require 'pxlsrt/lines'
 
 module Pxlsrt
   # Image class for handling ChunkyPNG images.
   class Image
+    extend Forwardable
+    def_delegators :@modified, :[], :[]=
+    attr_reader :width, :height, :modified
+
     def initialize(png)
-      @original = png
+      @width    = png.width
+      @height   = png.height
       @modified = ChunkyPNG::Image.from_canvas(png)
-      @width = png.width
-      @height = png.height
-      @grey = Array.new(@original.height) do |y|
-        Array.new(@original.width) do |x|
-          ChunkyPNG::Color.grayscale_teint(@original[x, y])
+      @grey     = Array.new(height) do |y|
+        Array.new(width) do |x|
+          ChunkyPNG::Color.grayscale_teint(png[x, y])
         end
       end
     end
@@ -164,44 +168,16 @@ module Pxlsrt
       }
     end
 
-    # Retrieve the color of a pixel.
-    def [](x, y)
-      @modified[x, y]
-    end
-
-    # Set the color of a pixel.
-    def []=(x, y, color)
-      @modified[x, y] = color
-    end
-
     def i(i)
-      x = i % @width
-      y = (i / @width).floor
+      x = i % width
+      y = (i / width).floor
       self[x, y]
     end
 
     def i=(i, color)
-      x = i % @width
-      y = (i / @width).floor
+      x = i % width
+      y = (i / width).floor
       self[x, y] = color
-    end
-
-    # Return the original, unmodified image.
-    def returnOriginal
-      @original
-    end
-
-    # Return the modified image.
-    def returnModified
-      @modified
-    end
-
-    def getWidth
-      @width
-    end
-
-    def getHeight
-      @height
     end
   end
 end

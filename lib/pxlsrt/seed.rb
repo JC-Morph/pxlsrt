@@ -32,14 +32,14 @@ module Pxlsrt
           verbose('Seed mode.')
           verbose('Creating Pxlsrt::Image object')
           png = Pxlsrt::Image.new(input)
-          traversed = [false] * (png.getWidth * png.getHeight)
+          traversed = [false] * (png.width * png.height)
           count = 0
           seeds = []
           if options[:random] != false
             progress('Planting seeds', 0, options[:random])
             (0...options[:random]).each do |s|
-              x = (0...png.getWidth).to_a.sample
-              y = (0...png.getHeight).to_a.sample
+              x = (0...png.width).to_a.sample
+              y = (0...png.height).to_a.sample
               seeds.push(spiral: Pxlsrt::Spiral.new(x, y),
                          pixels: [png[x, y]],
                          xy: [{ x: x, y: y }],
@@ -52,11 +52,11 @@ module Pxlsrt
               progress('Planting seeds', s + 1, options[:random])
             end
           else
-            progress('Planting seeds', 0, png.getWidth * png.getHeight)
+            progress('Planting seeds', 0, png.width * png.height)
             kernel = [[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]]
-            i = (png.getWidth + png.getHeight - 2) * 2
-            (1...(png.getHeight - 1)).each do |y|
-              (1...(png.getWidth - 1)).each do |x|
+            i = (png.width + png.height - 2) * 2
+            (1...(png.height - 1)).each do |y|
+              (1...(png.width - 1)).each do |x|
                 sum = 0
                 (-1..1).each do |ky|
                   (-1..1).each do |kx|
@@ -75,7 +75,7 @@ module Pxlsrt
                              })
                 end
                 i += 1
-                progress('Planting seeds', i, png.getWidth * png.getHeight)
+                progress('Planting seeds', i, png.width * png.height)
               end
             end
             if options[:distance] != false
@@ -96,7 +96,7 @@ module Pxlsrt
             end
           end
           (0...seeds.length).each do |r|
-            traversed[seeds[r][:anchor][:x] + seeds[r][:anchor][:y] * png.getWidth] = r
+            traversed[seeds[r][:anchor][:x] + seeds[r][:anchor][:y] * png.width] = r
             count += 1
           end
           verbose("Planted #{seeds.length} seeds")
@@ -107,9 +107,9 @@ module Pxlsrt
             seeds.each do |seed|
               unless seed[:retired]
                 n = seed[:spiral].next
-                if (n[:x] >= 0) && (n[:y] >= 0) && n[:x] < png.getWidth && n[:y] < png.getHeight && !traversed[n[:x] + n[:y] * png.getWidth]
+                if (n[:x] >= 0) && (n[:y] >= 0) && n[:x] < png.width && n[:y] < png.height && !traversed[n[:x] + n[:y] * png.width]
                   seed[:pixels].push(png[n[:x], n[:y]])
-                  traversed[n[:x] + n[:y] * png.getWidth] = r
+                  traversed[n[:x] + n[:y] * png.width] = r
                   seed[:xy].push(n)
                   seed[:placed] = true
                   count += 1
@@ -161,7 +161,7 @@ module Pxlsrt
             verbose("Took #{minutes} minute#{minutes != 1 ? 's' : ''} and #{seconds} second#{seconds != 1.0 ? 's' : ''}.")
           end
           verbose('Returning ChunkyPNG::Image...')
-          return png.returnModified
+          return png.modified
         else
           error('Options specified do not follow the correct format.')
           raise 'Bad options'
