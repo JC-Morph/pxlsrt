@@ -1,30 +1,21 @@
 require 'pxlsrt/sort_class'
+require 'pxlsrt/retrieve_lines'
 
 module Pxlsrt
   # Smart sorting uses sorted-finding algorithms to create bands to sort,
   # as opposed to brute sorting which doesn't care for the content or
   # sorteds, just a specified range to create bands.
   class Smart < SortClass
+    extend RetrieveLines
+
     class << self
       # The main attraction of the Smart class. Returns a ChunkyPNG::Image that
       # is sorted according to the options provided. Will raise any error that
       # occurs.
       def call
         verbose 'Smart mode.'
-        if !options[:vertical] && !options[:diagonal]
-          verbose('Retrieving rows')
-          lines = png.rows
-        elsif options[:vertical] && !options[:diagonal]
-          verbose('Retrieving columns')
-          lines = png.columns
-        elsif !options[:vertical] && options[:diagonal]
-          verbose('Retrieving diagonals')
-          lines = png.diagonals
-        elsif options[:vertical] && options[:diagonal]
-          verbose('Retrieving diagonals')
-          lines = png.diagonals(reverse: true)
-        end
-        verbose('Retrieving edges')
+        lines = retrieve_lines
+        verbose 'Retrieving edges'
         png.sobels
         iterator = if !options[:diagonal]
                      0...(lines.length)

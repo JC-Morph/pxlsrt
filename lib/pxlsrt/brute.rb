@@ -1,29 +1,20 @@
 require 'pxlsrt/sort_class'
+require 'pxlsrt/retrieve_lines'
 
 module Pxlsrt
   # Brute sorting creates bands for sorting using a range to determine the
   # bandwidths, as opposed to smart sorting which uses edge-finding to create
   # bands.
   class Brute < SortClass
+    extend RetrieveLines
+
     class << self
       # The main attraction of the Brute class. Returns a ChunkyPNG::Image that
       # is sorted according to the options provided. Will raise any error that
       # occurs.
       def call
         verbose 'Brute mode.'
-        if !options[:vertical] && !options[:diagonal]
-          verbose('Retrieving rows')
-          lines = png.rows
-        elsif options[:vertical] && !options[:diagonal]
-          verbose('Retrieving columns')
-          lines = png.columns
-        elsif !options[:vertical] && options[:diagonal]
-          verbose('Retrieving diagonals')
-          lines = png.diagonals
-        elsif options[:vertical] && options[:diagonal]
-          verbose('Retrieving diagonals')
-          lines = png.diagonals(reverse: true)
-        end
+        lines = retrieve_lines
         iterator = if !options[:diagonal]
                      0...(lines.length)
                    else

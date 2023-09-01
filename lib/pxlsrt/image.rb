@@ -65,7 +65,7 @@ module Pxlsrt
 
     # Retrieve a hash consisting of the diagonal lines of the image.
     # (Top left -> Bottom right), reverse option for (Bottom left -> Top right).
-    def diagonals(reverse: false)
+    def diagonals(reverse = false)
       flat_rows = reverse ? rows.reverse.flatten(1).reverse : rows.flatten(1)
       Pxlsrt::Lines.getDiagonals(flat_rows, width, height)
     end
