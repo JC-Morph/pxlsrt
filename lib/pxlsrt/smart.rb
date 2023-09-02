@@ -28,7 +28,7 @@ module Pxlsrt
                 direction = diagonal ? :rDiagonal : :vertical
               end
               coords    = png.send("#{direction}_coords", val, pixel)
-              pxl_sobel = png.sobel_and_color(coords['x'], coords['y'])
+              pxl_sobel = png.sobel_and_color(*coords.values)
               if division.empty? || below_threshold?(pxl_sobel['sobel'], division)
                 division.push(pxl_sobel)
               else

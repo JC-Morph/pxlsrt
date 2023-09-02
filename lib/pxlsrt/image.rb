@@ -23,30 +23,30 @@ module Pxlsrt
     # Retrieve a multidimensional array consisting of the horizontal lines (row)
     # of the image.
     def rows
-      (0...height).inject([]) {|arr, row| arr << modified.row(row) }
+      slice_image(height, :row)
     end
 
     # Retrieve the x and y coordinates of a pixel based on the multidimensional
     # array created using the #rows method.
     def horizontal_coords(horizontal, index)
       {
-        'x' => index.to_i,
-        'y' => horizontal.to_i
+        x: index.to_i,
+        y: horizontal.to_i
       }
     end
 
     # Retrieve a multidimensional array consisting of the vertical lines of the
     # image.
     def columns
-      (0...width).inject([]) {|arr, column| arr << modified.column(column) }
+      slice_image(width, :column)
     end
 
     # Retrieve the x and y coordinates of a pixel based on the multidimensional
     # array created using the #columns method.
     def vertical_coords(vertical, index)
       {
-        'x' => vertical.to_i,
-        'y' => index.to_i
+        x: vertical.to_i,
+        y: index.to_i
       }
     end
 
@@ -58,20 +58,18 @@ module Pxlsrt
     end
 
     # Replace a diagonal line (top left to bottom right) of the image.
-    def replaceDiagonal(d, arr)
-      d = d.to_i
-      (0...arr.length).each do |i|
-        xy = diagonal_coords(d, i)
-        self[xy['x'], xy['y']] = arr[i]
+    def replaceDiagonal(diag, arr)
+      (0...arr.length).each do |idx|
+        coords = diagonal_coords(diag, idx)
+        self[coords[:x], coords[:y]] = arr[idx]
       end
     end
 
     # Replace a diagonal line (bottom left to top right) of the image.
-    def replaceRDiagonal(d, arr)
-      d = d.to_i
-      (0...arr.length).each do |i|
-        xy = rDiagonal_coords(d, i)
-        self[xy['x'], xy['y']] = arr[i]
+    def replaceRDiagonal(diag, arr)
+      (0...arr.length).each do |idx|
+        coords = rDiagonal_coords(diag, idx)
+        self[coords[:x], coords[:y]] = arr[idx]
       end
     end
 
@@ -80,8 +78,8 @@ module Pxlsrt
     def diagonal_coords(diag, idx)
       diag = diag.to_i
       {
-        'x' => diag < 0 ? idx : (diag + idx),
-        'y' => diag < 0 ? (diag.abs + idx) : idx
+        x: diag < 0 ? idx : (diag + idx),
+        y: diag < 0 ? (diag.abs + idx) : idx
       }
     end
 
@@ -89,7 +87,7 @@ module Pxlsrt
     # using the #diagonals method.
     def rDiagonal_coords(d, i)
       coords = diagonal_coords(d, i)
-      coords.merge({'x' => width - 1 - coords['x']})
+      coords.merge(x: width - coords[:x] - 1)
     end
 
     # Retrieve Sobel value for a given pixel.
@@ -141,6 +139,14 @@ module Pxlsrt
       x = i % width
       y = (i / width).floor
       self[x, y] = color
+    end
+
+    private
+
+    def slice_image(dimension, direction)
+      (0...dimension).each_with_object([]) do |line, arr|
+        arr << modified.send(direction, line)
+      end
     end
   end
 end
