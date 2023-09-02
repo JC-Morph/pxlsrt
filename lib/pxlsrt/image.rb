@@ -6,7 +6,7 @@ module Pxlsrt
   # Image class for handling ChunkyPNG images.
   class Image
     extend Forwardable
-    def_delegators :@modified, :[], :[]=
+    def_delegators :@modified, :[], :[]=, :replace_column!, :replace_row!
     attr_reader :width, :height, :modified
 
     def initialize(png)
@@ -26,12 +26,6 @@ module Pxlsrt
       (0...height).inject([]) {|arr, row| arr << modified.row(row) }
     end
 
-    # Replace a horizontal line (row) of the image.
-    def replace_rows(y, arr)
-      modified.replace_row!(y, arr)
-      modified
-    end
-
     # Retrieve the x and y coordinates of a pixel based on the multidimensional
     # array created using the #rows method.
     def horizontal_coords(horizontal, index)
@@ -45,13 +39,6 @@ module Pxlsrt
     # image.
     def columns
       (0...width).inject([]) {|arr, column| arr << modified.column(column) }
-    end
-
-    ##
-    # Replace a vertical line (column) of the image.
-    def replace_columns(y, arr)
-      modified.replace_column!(y, arr)
-      modified
     end
 
     # Retrieve the x and y coordinates of a pixel based on the multidimensional
