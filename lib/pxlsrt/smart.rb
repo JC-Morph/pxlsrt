@@ -23,21 +23,17 @@ module Pxlsrt
           division = []
           if line.size > 1
             (0...line.length).each do |pixel|
-              if !options[:vertical] && !options[:diagonal]
-                xy = png.horizontal_coords(val, pixel)
-              elsif options[:vertical] && !options[:diagonal]
-                xy = png.vertical_coords(val, pixel)
-              elsif !options[:vertical] && options[:diagonal]
-                xy = png.diagonalXY(val, pixel)
-              elsif options[:vertical] && options[:diagonal]
-                xy = png.rDiagonalXY(val, pixel)
+              direction = diagonal ? :diagonal : :horizontal
+              if vertical
+                direction = diagonal ? :rDiagonal : :vertical
               end
-              pxlSobel = png.getSobelAndColor(xy['x'], xy['y'])
-              if division.empty? || ((options[:absolute] ? pxlSobel['sobel'] : pxlSobel['sobel'] - division.last['sobel']) <= options[:threshold])
-                division.push(pxlSobel)
+              coords    = png.send("#{direction}_coords", val, pixel)
+              pxl_sobel = png.sobel_and_color(coords['x'], coords['y'])
+              if division.empty? || below_threshold?(pxl_sobel['sobel'], division)
+                division.push(pxl_sobel)
               else
                 divisions.push(division)
-                division = [pxlSobel]
+                division = [pxl_sobel]
               end
               if pixel == line.size - 1
                 divisions.push(division)
@@ -46,7 +42,7 @@ module Pxlsrt
             end
           end
           new_line = divisions.each.with_object([]) do |band, arr|
-            band = band.map {|sobel_and_color| sobel_and_color['color'] }
+            band = band.map {|pxl_sobel| pxl_sobel['color'] }
             arr.concat handlePixelSort(band, options)
           end
           replace_lines(val, new_line)
@@ -56,6 +52,11 @@ module Pxlsrt
       end
 
       private
+
+      def below_threshold?(sobel, division)
+        sobel -= division.last['sobel'] unless options[:absolute]
+        sobel <= options[:threshold]
+      end
 
       def opt_defaults
         {

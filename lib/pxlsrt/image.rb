@@ -57,21 +57,11 @@ module Pxlsrt
       Pxlsrt::Lines.getDiagonals(flat_rows, width, height)
     end
 
-    # Get the column and row based on the diagonal hash created using
-    # the #diagonals method.
-    def diagonal_coords(diag, idx)
-      diag = diag.to_i
-      {
-        'x' => diag < 0 ? idx : (diag + idx),
-        'y' => diag < 0 ? (diag.abs + idx) : idx
-      }
-    end
-
     # Replace a diagonal line (top left to bottom right) of the image.
     def replaceDiagonal(d, arr)
       d = d.to_i
       (0...arr.length).each do |i|
-        xy = diagonalXY(d, i)
+        xy = diagonal_coords(d, i)
         self[xy['x'], xy['y']] = arr[i]
       end
     end
@@ -80,22 +70,24 @@ module Pxlsrt
     def replaceRDiagonal(d, arr)
       d = d.to_i
       (0...arr.length).each do |i|
-        xy = rDiagonalXY(d, i)
+        xy = rDiagonal_coords(d, i)
         self[xy['x'], xy['y']] = arr[i]
       end
     end
 
     # Retrieve the x and y coordinates of a pixel based on the hash created
-    # using the #diagonals method and the column and row of the
-    # #diagonal_coords method.
-    def diagonalXY(d, i)
-      diagonal_coords(d, i)
+    # using the #diagonals method.
+    def diagonal_coords(diag, idx)
+      diag = diag.to_i
+      {
+        'x' => diag < 0 ? idx : (diag + idx),
+        'y' => diag < 0 ? (diag.abs + idx) : idx
+      }
     end
 
     # Retrieve the x and y coordinates of a pixel based on the hash created
-    # using the #diagonals method with reverse and the column and row of the
-    # #diagonal_coords method.
-    def rDiagonalXY(d, i)
+    # using the #diagonals method.
+    def rDiagonal_coords(d, i)
       coords = diagonal_coords(d, i)
       coords.merge({'x' => width - 1 - coords['x']})
     end
@@ -132,7 +124,7 @@ module Pxlsrt
     end
 
     # Retrieve the Sobel value and color of a pixel.
-    def getSobelAndColor(x, y)
+    def sobel_and_color(x, y)
       {
         'sobel' => compute_sobel(x, y),
         'color' => self[x, y]
