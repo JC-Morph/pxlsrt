@@ -23,4 +23,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler', '~> 2.4.19'
   spec.add_development_dependency 'rake',    '~> 13.0.6'
+  # Benchmark
+  spec.add_development_dependency 'benchmark-perf'
 end
