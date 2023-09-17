@@ -3,15 +3,14 @@
 require 'pxlsrt'
 require 'thor'
 
-##
-# The command line. Created using Thor. Universal options:
-# * reverse - Reverses the bands or randomly reverses or doesn't reverse.
+# Thor command-line class. Universal options:
+# * reverse  - Reverses the bands or randomly reverses or doesn't reverse.
 # * vertical - Sorts vertically.
-# * diagonal - Sorts diagonally. Use with vertical to change the diagonals' orientation.
-# * smooth - "Smoothes" sorted values by grouping identical pixels together.
-# * method - What method to use to sort pixels.
-# * verbose - Have pxlsrt tell you what it's working on.
-# * help - More in depth commands.
+# * diagonal - Sorts diagonally. Use with vertical to change orientation.
+# * smooth   - "Smoothes" sorted values by grouping identical pixels together.
+# * method   - What method to use to sort pixels.
+# * verbose  - Have pxlsrt tell you what it's working on.
+# * help     - More in depth commands.
 class CLI < Thor
   class_option :verbose, type: :boolean, default: false, aliases: '-V'
 
@@ -24,7 +23,6 @@ class CLI < Thor
   option :min, type: :numeric, default: Float::INFINITY, banner: 'MINIMUM BANDWIDTH'
   option :max, type: :numeric, default: Float::INFINITY, banner: 'MAXIMUM BANDWIDTH'
   desc 'brute INPUT OUTPUT [options]', 'Brute pixel sorting'
-  ##
   # Specific options:
   # * min - Minimum bandwidth.
   # * max - Maximum bandwidth.
@@ -45,10 +43,13 @@ class CLI < Thor
   option :absolute, type: :boolean, default: false, aliases: '-a', banner: 'ABSOLUTE EDGE FINDING'
   option :threshold, type: :numeric, default: 20, aliases: '-t'
   desc 'smart INPUT OUTPUT [options]', 'Smart pixel sorting'
-  ##
   # Specific options:
-  # * threshold - Number used in edge finding. Specifics explained under "absolute".
-  # * absolute - Make edge finding absolute over relative. For example, define a range as a collection of values under the threshold. Relative edge finding is when the contrast of the next pixel is larger than the threshold.
+  # * threshold - Number used in edge finding. Specifics explained under
+  #               "absolute".
+  # * absolute  - Make edge finding absolute over relative. For example, define
+  #               a range as a collection of values under the threshold.
+  #               Relative edge finding is when the contrast of the next pixel
+  #               is larger than the threshold.
   def smart(input, output)
     k = { trusted: true }
     options.each_key do |o|
