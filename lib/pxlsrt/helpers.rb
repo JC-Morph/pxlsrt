@@ -60,15 +60,17 @@ module Pxlsrt
     end
 
     # Progress indication.
-    def progress(what, amount, outof)
+    def progress(what, amount, total)
       return unless options[:verbose]
-      progress = (amount.to_f * 100.0 / outof.to_f).to_i
-      if progress == 100
-        puts "\r#{green('pxlsrt')} #{what} (#{green("#{progress}%")})"
-      else
-        $stdout.write "\r#{yellow('pxlsrt')} #{what} (#{yellow("#{progress}%")})"
-        $stdout.flush
-      end
+      progress   = (amount.to_f * 100.0 / total).to_i
+      format_hsh = {what: what, progress: progress}
+      return puts format(prog_str(:green), format_hsh) if progress == 100
+      $stdout.write format(prog_str(:yellow), format_hsh)
+      $stdout.flush
+    end
+
+    def prog_str(color)
+      "\r#{send(color, 'pxlsrt')} %{what} (#{send(color, "%{progress}%%")})"
     end
 
     module_function
