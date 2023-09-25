@@ -20,26 +20,23 @@ module Pxlsrt
           line = lines[val]
           progress('Dividing and sorting lines', idx, total)
           divisions = []
-          division = []
+          division  = []
+          direction = diagonal ? :diagonal : :horizontal
+          if vertical
+            direction = diagonal ? :rDiagonal : :vertical
+          end
           if line.size > 1
-            (0...line.length).each do |pixel|
-              direction = diagonal ? :diagonal : :horizontal
-              if vertical
-                direction = diagonal ? :rDiagonal : :vertical
-              end
+            (0...line.size).each do |pixel|
               coords    = png.send("#{direction}_coords", val, pixel)
               pxl_sobel = png.sobel_and_color(*coords.values)
               if division.empty? || below_threshold?(pxl_sobel['sobel'], division)
-                division.push(pxl_sobel)
+                division << pxl_sobel
               else
-                divisions.push(division)
+                divisions << division
                 division = [pxl_sobel]
               end
-              if pixel == line.size - 1
-                divisions.push(division)
-                division = []
-              end
             end
+            divisions << division
           end
           new_line = divisions.each.with_object([]) do |band, arr|
             band = band.map {|pxl_sobel| pxl_sobel['color'] }
