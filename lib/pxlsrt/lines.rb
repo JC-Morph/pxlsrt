@@ -82,11 +82,6 @@ module Pxlsrt
         end
       end
 
-      # Gets "rows" of an array based on a width
-      def imageRGBLines(image, width)
-        image.each_slice(width).to_a
-      end
-
       # Outputs random slices of an array.
       # Because of the requirements of pxlsrt, it doesn't actually slice the
       # array, but returns a range-like array. Example:
@@ -122,30 +117,6 @@ module Pxlsrt
           dias[x.to_s] = z
         end
         dias
-      end
-
-      ##
-      # Uses math to turn an array of diagonals into a linear array.
-      def fromDiagonals(obj, width)
-        ell = []
-        obj.each_key do |k|
-          r = k.to_i
-          n = r < 0
-          if n
-            x = 0
-            y = r.abs
-          else
-            x = r
-            y = 0
-          end
-          ell[x + y * width] = obj[k].first
-          (1...obj[k].length).each do |v|
-            x += 1
-            y += 1
-            ell[x + y * width] = obj[k][v]
-          end
-        end
-        ell
       end
     end
   end
