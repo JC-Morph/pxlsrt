@@ -54,7 +54,7 @@ module Pxlsrt
     # (Top left -> Bottom right), reverse option for (Bottom left -> Top right).
     def diagonals(reverse = false)
       flat_rows = reverse ? rows.reverse.flatten(1).reverse : rows.flatten(1)
-      Pxlsrt::Lines.getDiagonals(flat_rows, width, height)
+      Pxlsrt::Lines.get_diagonals(flat_rows, width, height)
     end
 
     # Replace a diagonal line (top left to bottom right) of the image.

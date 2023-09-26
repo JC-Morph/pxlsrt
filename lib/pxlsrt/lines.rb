@@ -103,20 +103,20 @@ module Pxlsrt
         end
       end
 
-      ##
-      # Uses math to turn an array into an array of diagonals.
-      def getDiagonals(array, width, height)
-        dias = {}
-        ((1 - height)...width).each do |x|
-          z = []
-          (0...height).each do |y|
-            if (x + (width + 1) * y).between?(width * y, (width * (y + 1) - 1))
-              z.push(array[(x + (width + 1) * y)])
-            end
-          end
-          dias[x.to_s] = z
+      # Uses math to turn an array of rows into an array of diagonals.
+      def get_diagonals(rows, width, height)
+        ((1 - height)...width).each_with_object({}) do |x_coord, hsh|
+          diag = get_diagonal(x_coord, width, height)
+          hsh[x_coord.to_s] = diag.map {|idx| rows[idx] }
         end
-        dias
+      end
+
+      def get_diagonal(x_coord, width, height)
+        (0...height).each_with_object([]) do |y_coord, arr|
+          idx    = x_coord + (width + 1) * y_coord
+          bounds = [width * y_coord, (width * y_coord.succ) - 1]
+          arr << idx if idx.between?(*bounds)
+        end
       end
     end
   end
