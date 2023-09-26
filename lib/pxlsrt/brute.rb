@@ -16,13 +16,13 @@ module Pxlsrt
         verbose 'Brute mode.'
         iterator.each.with_index do |val, idx|
           line = lines[val]
-          progress('Dividing and sorting lines', idx, total)
-          divisions = Pxlsrt::Lines.randomSlices(line.size, options[:min], options[:max])
-          new_line = divisions.each.with_object([]) do |division, arr|
+          divisions = Pxlsrt::Lines.random_slices(line.size, options[:min], options[:max])
+          new_line  = divisions.each.with_object([]) do |division, arr|
             band = line[division[0]..division[1]]
             arr.concat handlePixelSort(band, options)
           end
           replace_lines(val, new_line)
+          progress('Dividing and sorting lines', idx.succ, total)
         end
         verbose('Returning ChunkyPNG::Image...')
         png.modified

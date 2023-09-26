@@ -91,29 +91,20 @@ module Pxlsrt
       # Because of the requirements of pxlsrt, it doesn't actually slice the
       # array, but returns a range-like array. Example:
       # [[0, 5], [6, 7], [8, 10]]
-      def randomSlices(mainLength, minLength, maxLength)
-        if mainLength <= 1
-          [[0, 0]]
-        else
-          min = [minLength, maxLength].min
-          max = [minLength, maxLength].max
-          min = mainLength if min > mainLength
-          max = mainLength if max > mainLength
-          min = 1 if min < 1
-          max = 1 if max < 1
-          nu = [[0, rand(min..max) - 1]]
-          last = nu.last.last
-          sorting = true
-          while sorting
-            if (mainLength - last) <= max
-              nu.push([last + 1, mainLength - 1]) if last + 1 <= mainLength - 1
-              sorting = false
-            else
-              nu.push([last + 1, last + rand(min..max)])
-            end
-            last = nu.last.last
+      def random_slices(main_size, min_size, max_size)
+        return [[0, 0]] if main_size <= 1
+        min    = [[min_size, main_size, max_size].min, 1].max
+        max    = [[[min_size, max_size].max, main_size].min, 1].max
+        slices = [[0, rand(min..max) - 1]]
+        while true
+          last      = slices.last.last
+          last_succ = last.succ
+          if (main_size - last) > max
+            slices << [last_succ, last + rand(min..max)]
+          else
+            slices << [last_succ, main_size - 1] if last_succ < main_size
+            return slices
           end
-          nu
         end
       end
 
