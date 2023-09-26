@@ -120,7 +120,7 @@ module Pxlsrt
         progress('Sort seeds and place pixels', 0, seeds.length)
         r = 0
         seeds.each do |seed|
-          band = handlePixelSort(seed[:pixels], options)
+          band = handle_pixel_sort(seed[:pixels])
           i = 0
           seed[:xy].each do |k|
             png[k[:x], k[:y]] = band[i]

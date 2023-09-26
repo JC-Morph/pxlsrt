@@ -36,27 +36,15 @@ module Pxlsrt
     end
 
     # Pixel sorting helper to eliminate repetition.
-    def handlePixelSort(band, o)
-      if ((o[:reverse].class == String) && (o[:reverse].casecmp('reverse').zero? || (o[:reverse] == ''))) || (o[:reverse] == true)
-        reverse = 1
-      elsif (o[:reverse].class == String) && o[:reverse].casecmp('either').zero?
-        reverse = -1
-      else
-        reverse = 0
+    def handle_pixel_sort(band)
+      keys = band
+      if options[:smooth]
+        band = band.group_by {|idx| idx }
+        keys = band.keys
       end
-      if o[:smooth]
-        u = band.group_by { |x| x }
-        k = u.keys
-      else
-        k = band
-      end
-      sortedBand = Pxlsrt::Colors.pixelSort(
-        k,
-        o[:method],
-        reverse
-      )
-      sortedBand = sortedBand.flat_map { |x| u[x] } if o[:smooth]
-      Pxlsrt::Lines.handleMiddlate(sortedBand, o[:middle])
+      sorted = Pxlsrt::Colors.pixelSort(keys, options[:method], parse_reverse)
+      sorted = sorted.flat_map {|idx| band[idx] } if options[:smooth]
+      Pxlsrt::Lines.handleMiddlate(sorted, options[:middle])
     end
 
     # Progress indication.
@@ -106,6 +94,20 @@ module Pxlsrt
 
     def opt_rules
       raise NotImplementedError
+    end
+
+    def parse_reverse
+      reverse = options[:reverse]
+      case reverse
+      when String
+        return 1  if reverse.casecmp('reverse').zero? || reverse.empty?
+        return -1 if reverse.casecmp('either').zero?
+        0
+      when true
+        1
+      else
+        0
+      end
     end
   end
 end

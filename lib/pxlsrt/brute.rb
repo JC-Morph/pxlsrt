@@ -19,7 +19,7 @@ module Pxlsrt
           divisions = Pxlsrt::Lines.random_slices(line.size, options[:min], options[:max])
           new_line  = divisions.each.with_object([]) do |division, arr|
             band = line[division[0]..division[1]]
-            arr.concat handlePixelSort(band, options)
+            arr.concat handle_pixel_sort(band)
           end
           replace_lines(val, new_line)
           progress('Dividing and sorting lines', idx.succ, total)

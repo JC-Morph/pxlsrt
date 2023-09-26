@@ -40,7 +40,7 @@ module Pxlsrt
           end
           new_line = divisions.each.with_object([]) do |band, arr|
             band = band.map {|pxl_sobel| pxl_sobel['color'] }
-            arr.concat handlePixelSort(band, options)
+            arr.concat handle_pixel_sort(band)
           end
           replace_lines(val, new_line)
         end
