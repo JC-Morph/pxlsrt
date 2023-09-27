@@ -14,14 +14,39 @@ require 'thor'
 class CLI < Thor
   class_option :verbose, type: :boolean, default: false, aliases: '-V'
 
-  option :reverse,  type: :boolean, default: false, aliases: '-r'
-  option :smooth,   type: :boolean, default: false, aliases: '-s'
-  option :vertical, type: :boolean, default: false, aliases: '-v'
-  option :diagonal, type: :boolean, default: false, aliases: '-d'
-  option :middle,   type: :string,  default: false, aliases: '-M'
-  option :method, type: :string, default: 'sum-rgb', banner: "[#{Pxlsrt::Colors::METHODS.join(' | ')}]", aliases: '-m', enum: Pxlsrt::Colors::METHODS
-  option :min, type: :numeric, default: Float::INFINITY, banner: 'MINIMUM BANDWIDTH'
-  option :max, type: :numeric, default: Float::INFINITY, banner: 'MAXIMUM BANDWIDTH'
+  METHODS = Pxlsrt::Colors::METHODS
+
+  class << self
+    def bool
+      @bool ||= {type: :boolean, default: false}
+    end
+
+    def infinite
+      @infinite ||= {type: :numeric, default: Float::INFINITY}
+    end
+
+    def common_options
+      option :reverse, aliases: '-r', **bool
+      option :smooth,  aliases: '-s', **bool
+      option :middle,  aliases: '-M', check_default_type: false, default: false
+      option :method,
+        aliases: '-m',
+        type:    :string,
+        default: 'sum-rgb',
+        enum:    METHODS,
+        banner:  "[#{METHODS.join(' | ')}]"
+    end
+
+    def axis_options
+      option :vertical, aliases: '-v', **bool
+      option :diagonal, aliases: '-d', **bool
+    end
+  end
+
+  common_options
+  axis_options
+  option :min, banner: 'MINIMUM BANDWIDTH', **infinite
+  option :max, banner: 'MAXIMUM BANDWIDTH', **infinite
   desc 'brute INPUT OUTPUT [options]', 'Brute pixel sorting'
   # Specific options:
   # * min - Minimum bandwidth.
@@ -34,14 +59,10 @@ class CLI < Thor
     Pxlsrt::Brute.suite(input, output, k)
   end
 
-  option :reverse,  type: :boolean, default: false, aliases: '-r'
-  option :smooth,   type: :boolean, default: false, aliases: '-s'
-  option :vertical, type: :boolean, default: false, aliases: '-v'
-  option :diagonal, type: :boolean, default: false, aliases: '-d'
-  option :middle,   type: :string,  default: false, aliases: '-M'
-  option :method, type: :string, default: 'sum-rgb', banner: "[#{Pxlsrt::Colors::METHODS.join(' | ')}]", aliases: '-m', enum: Pxlsrt::Colors::METHODS
-  option :absolute,  type: :boolean, default: false, aliases: '-a', banner: 'ABSOLUTE EDGE FINDING'
-  option :threshold, type: :numeric, default: 20,    aliases: '-t'
+  common_options
+  axis_options
+  option :absolute,  aliases: '-a', banner: 'ABSOLUTE EDGE FINDING', **bool
+  option :threshold, aliases: '-t', type: :numeric, default: 20
   desc 'smart INPUT OUTPUT [options]', 'Smart pixel sorting'
   # Specific options:
   # * threshold - Number used in edge finding. Specifics explained under
@@ -58,8 +79,12 @@ class CLI < Thor
     Pxlsrt::Smart.suite(input, output, k)
   end
 
-  option :method, type: :string,  aliases: '-m', default: 'brightness', enum: %w(brightness white black)
-  option :value,  type: :numeric, aliases: '-v'
+  option :value,  aliases: '-v', type: :numeric
+  option :method,
+    aliases: '-m',
+    type:    :string,
+    default: 'brightness',
+    enum:    %w(brightness white black)
   desc 'kim INPUT OUTPUT [options]', "Uses Kim Asendorf's algorithm"
   def kim(input, output)
     k = { trusted: true }
@@ -69,13 +94,10 @@ class CLI < Thor
     Pxlsrt::Kim.suite(input, output, k)
   end
 
-  option :reverse, type: :boolean, default: false, aliases: '-r'
-  option :smooth,  type: :boolean, default: false, aliases: '-s'
-  option :middle,  type: :string,  default: false, aliases: '-M'
-  option :method, type: :string, default: 'sum-rgb', banner: "[#{Pxlsrt::Colors::METHODS.join(' | ')}]", aliases: '-m', enum: Pxlsrt::Colors::METHODS
-  option :random,    type: :boolean, default: false, aliases: '-R'
-  option :distance,  type: :numeric, default: 100,   aliases: '-d'
-  option :threshold, type: :numeric, default: 0.1,   aliases: '-t'
+  common_options
+  option :random,    aliases: '-R', **bool
+  option :distance,  aliases: '-d', type: :numeric, default: 100
+  option :threshold, aliases: '-t', type: :numeric, default: 0.1
   desc 'seed INPUT OUTPUT [options]', 'Seed pixel sorting'
   def seed(input, output)
     k = { trusted: true }
