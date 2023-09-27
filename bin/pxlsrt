@@ -52,11 +52,7 @@ class CLI < Thor
   # * min - Minimum bandwidth.
   # * max - Maximum bandwidth.
   def brute(input, output)
-    k = { trusted: true }
-    options.each_key do |o|
-      k[o.to_sym] = options[o]
-    end
-    Pxlsrt::Brute.suite(input, output, k)
+    Pxlsrt::Brute.suite(input, output, format_options)
   end
 
   common_options
@@ -72,11 +68,7 @@ class CLI < Thor
   #               Relative edge finding is when the contrast of the next pixel
   #               is larger than the threshold.
   def smart(input, output)
-    k = { trusted: true }
-    options.each_key do |o|
-      k[o.to_sym] = options[o]
-    end
-    Pxlsrt::Smart.suite(input, output, k)
+    Pxlsrt::Smart.suite(input, output, format_options)
   end
 
   option :value,  aliases: '-v', type: :numeric
@@ -87,11 +79,7 @@ class CLI < Thor
     enum:    %w(brightness white black)
   desc 'kim INPUT OUTPUT [options]', "Uses Kim Asendorf's algorithm"
   def kim(input, output)
-    k = { trusted: true }
-    options.each_key do |o|
-      k[o.to_sym] = options[o]
-    end
-    Pxlsrt::Kim.suite(input, output, k)
+    Pxlsrt::Kim.suite(input, output, format_options)
   end
 
   common_options
@@ -100,13 +88,17 @@ class CLI < Thor
   option :threshold, aliases: '-t', type: :numeric, default: 0.1
   desc 'seed INPUT OUTPUT [options]', 'Seed pixel sorting'
   def seed(input, output)
-    k = { trusted: true }
-    options.each_key do |o|
-      k[o.to_sym] = options[o]
+    opts = format_options
+    [:random, :distance].each do |opt|
+      opts[opt] = Integer(opts[opt], exception: false) || false
     end
-    k[:random] = Pxlsrt::Helpers.isNumeric?(k[:random]) ? k[:random].to_i : false
-    k[:distance] = Pxlsrt::Helpers.isNumeric?(k[:distance]) ? k[:distance].to_i : false
-    Pxlsrt::Seed.suite(input, output, k)
+    Pxlsrt::Seed.suite(input, output, opts)
+  end
+
+  private
+
+  def format_options
+    options.transform_keys(&:to_sym).merge trusted: true
   end
 end
 
