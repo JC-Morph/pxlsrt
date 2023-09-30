@@ -52,7 +52,7 @@ class CLI < Thor
   # * min - Minimum bandwidth.
   # * max - Maximum bandwidth.
   def brute(input, output)
-    Pxlsrt::Brute.suite(input, output, format_options)
+    run_suite(:brute, input, output)
   end
 
   common_options
@@ -68,7 +68,7 @@ class CLI < Thor
   #               Relative edge finding is when the contrast of the next pixel
   #               is larger than the threshold.
   def smart(input, output)
-    Pxlsrt::Smart.suite(input, output, format_options)
+    run_suite(:smart, input, output)
   end
 
   option :value,  aliases: '-v', type: :numeric
@@ -79,7 +79,7 @@ class CLI < Thor
     enum:    %w(brightness white black)
   desc 'kim INPUT OUTPUT [options]', "Kim Asendorf's sorting algorithm"
   def kim(input, output)
-    Pxlsrt::Kim.suite(input, output, format_options)
+    run_suite(:kim, input, output)
   end
 
   common_options
@@ -92,10 +92,15 @@ class CLI < Thor
     [:random, :distance].each do |opt|
       opts[opt] = Integer(opts[opt], exception: false) || false
     end
-    Pxlsrt::Seed.suite(input, output, opts)
+    run_suite(:seed, input, output, opts)
   end
 
   private
+
+  def run_suite(algo, input, output, opts = nil)
+    opts ||= format_options
+    Pxlsrt.const_get(algo.capitalize).suite(input, output, opts)
+  end
 
   def format_options
     options.transform_keys(&:to_sym).merge trusted: true
