@@ -47,7 +47,7 @@ class CLI < Thor
   axis_options
   option :min, banner: 'MINIMUM BANDWIDTH', **infinite
   option :max, banner: 'MAXIMUM BANDWIDTH', **infinite
-  desc 'brute INPUT OUTPUT [options]', 'Brute pixel sorting'
+  desc 'brute INPUT OUTPUT [options]', 'Brute sorting algorithm'
   # Specific options:
   # * min - Minimum bandwidth.
   # * max - Maximum bandwidth.
@@ -59,7 +59,7 @@ class CLI < Thor
   axis_options
   option :absolute,  aliases: '-a', banner: 'ABSOLUTE EDGE FINDING', **bool
   option :threshold, aliases: '-t', type: :numeric, default: 20
-  desc 'smart INPUT OUTPUT [options]', 'Smart pixel sorting'
+  desc 'smart INPUT OUTPUT [options]', 'Smart sorting algorithm'
   # Specific options:
   # * threshold - Number used in edge finding. Specifics explained under
   #               "absolute".
@@ -77,7 +77,7 @@ class CLI < Thor
     type:    :string,
     default: 'brightness',
     enum:    %w(brightness white black)
-  desc 'kim INPUT OUTPUT [options]', "Uses Kim Asendorf's algorithm"
+  desc 'kim INPUT OUTPUT [options]', "Kim Asendorf's sorting algorithm"
   def kim(input, output)
     Pxlsrt::Kim.suite(input, output, format_options)
   end
@@ -86,7 +86,7 @@ class CLI < Thor
   option :random,    aliases: '-R', **bool
   option :distance,  aliases: '-d', type: :numeric, default: 100
   option :threshold, aliases: '-t', type: :numeric, default: 0.1
-  desc 'seed INPUT OUTPUT [options]', 'Seed pixel sorting'
+  desc 'seed INPUT OUTPUT [options]', 'Seed sorting algorithm'
   def seed(input, output)
     opts = format_options
     [:random, :distance].each do |opt|
