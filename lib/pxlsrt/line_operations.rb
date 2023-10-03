@@ -14,11 +14,12 @@ module Pxlsrt
     end
 
     def replace_lines(idx, new_line)
-      lines = diagonal ? :Diagonal : :_row!
+      lines = diagonal ? [:diagonal] : [:row]
       if vertical
-        lines = diagonal ? :RDiagonal : :_column!
+        lines = diagonal ? [:diagonal, true] : [:column]
       end
-      png.send("replace#{lines}", idx, new_line)
+      lines.insert(1, idx, new_line)
+      png.send("replace_#{lines[0]}!", *lines[1..])
     end
 
     def iterator

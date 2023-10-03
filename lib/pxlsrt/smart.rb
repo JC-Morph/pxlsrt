@@ -23,7 +23,7 @@ module Pxlsrt
           division  = []
           direction = diagonal ? :diagonal : :horizontal
           if vertical
-            direction = diagonal ? :rDiagonal : :vertical
+            direction = diagonal ? :inverse_diagonal : :vertical
           end
           if line.size > 1
             (0...line.size).each do |pixel|

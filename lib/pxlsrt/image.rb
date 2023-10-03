@@ -52,42 +52,18 @@ module Pxlsrt
 
     # Retrieve a hash consisting of the diagonal lines of the image.
     # (Top left -> Bottom right), reverse option for (Bottom left -> Top right).
-    def diagonals(reverse = false)
-      flat_rows = reverse ? rows.reverse.flatten(1).reverse : rows.flatten(1)
+    def diagonals(inverse = false)
+      flat_rows = inverse ? rows.reverse.flatten(1).reverse : rows.flatten(1)
       Pxlsrt::Lines.get_diagonals(flat_rows, width, height)
     end
 
     # Replace a diagonal line (top left to bottom right) of the image.
-    def replaceDiagonal(diag, arr)
-      (0...arr.length).each do |idx|
-        coords = diagonal_coords(diag, idx)
+    def replace_diagonal!(diag, arr, inverse = false)
+      coord_method = "#{inverse ? 'inverse_' : ''}diagonal_coords"
+      (0...arr.size).each do |idx|
+        coords = send(coord_method, diag, idx)
         self[coords[:x], coords[:y]] = arr[idx]
       end
-    end
-
-    # Replace a diagonal line (bottom left to top right) of the image.
-    def replaceRDiagonal(diag, arr)
-      (0...arr.length).each do |idx|
-        coords = rDiagonal_coords(diag, idx)
-        self[coords[:x], coords[:y]] = arr[idx]
-      end
-    end
-
-    # Retrieve the x and y coordinates of a pixel based on the hash created
-    # using the #diagonals method.
-    def diagonal_coords(diag, idx)
-      diag = diag.to_i
-      {
-        x: diag < 0 ? idx : (diag + idx),
-        y: diag < 0 ? (diag.abs + idx) : idx
-      }
-    end
-
-    # Retrieve the x and y coordinates of a pixel based on the hash created
-    # using the #diagonals method.
-    def rDiagonal_coords(d, i)
-      coords = diagonal_coords(d, i)
-      coords.merge(x: width - coords[:x] - 1)
     end
 
     # Retrieve Sobel value for a given pixel.
@@ -142,6 +118,23 @@ module Pxlsrt
     end
 
     private
+
+    # Retrieve the x and y coordinates of a pixel based on the hash created
+    # using the #diagonals method.
+    def diagonal_coords(diag, idx)
+      diag = diag.to_i
+      {
+        x: diag < 0 ? idx : (diag + idx),
+        y: diag < 0 ? (diag.abs + idx) : idx
+      }
+    end
+
+    # Retrieve the x and y coordinates of a pixel based on the hash created
+    # using the #diagonals method with inverse = true.
+    def inverse_diagonal_coords(diag, idx)
+      coords = diagonal_coords(diag, idx)
+      coords.merge(x: width - coords[:x] - 1)
+    end
 
     def slice_image(dimension, direction)
       (0...dimension).each_with_object([]) do |line, arr|
