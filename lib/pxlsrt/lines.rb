@@ -4,30 +4,6 @@ module Pxlsrt
   # "Line" operations used on arrays f colors.
   class Lines
     class << self
-      # ChunkyPNG's rotation was a little slow and doubled runtime.
-      # This "rotates" an array, based on the width and height.
-      # It uses math and it's really cool, trust me.
-      def rotateImage(what, width, height, a)
-        nu = []
-        case a
-        when 0, 360, 4
-          nu = what
-        when 1, 90
-          (0...what.length).each do |xy|
-            idx = ((height - 1) - (xy / width).floor) + (xy % width) * height
-            nu[idx] = what[xy]
-          end
-        when 2, 180
-          nu = what.reverse
-        when 3, 270
-          (0...what.length).each do |xy|
-            idx = (xy / width).floor + ((width - 1) - (xy % width)) * height
-            nu[idx] = what[xy]
-          end
-        end
-        nu
-      end
-
       # Some fancy rearranging.
       # [a, b, c, d, e] -> [d, b, a, c, e]
       # [a, b, c, d] -> [c, a, b, d]
