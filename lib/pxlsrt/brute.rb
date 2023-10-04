@@ -1,5 +1,6 @@
-require 'pxlsrt/sort_class'
+require 'pxlsrt/lines'
 require 'pxlsrt/line_operations'
+require 'pxlsrt/sort_class'
 
 module Pxlsrt
   # Brute sorting creates bands for sorting using a range to determine the
