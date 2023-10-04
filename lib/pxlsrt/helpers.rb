@@ -44,7 +44,7 @@ module Pxlsrt
       end
       sorted = Pxlsrt::Colors.pixelSort(keys, options[:method], parse_reverse)
       sorted = sorted.flat_map {|idx| band[idx] } if options[:smooth]
-      Pxlsrt::Lines.handleMiddlate(sorted, options[:middle])
+      Pxlsrt::Lines.handle_middlate(sorted, options[:middle])
     end
 
     # Progress indication.

@@ -6,55 +6,45 @@ module Pxlsrt
     class << self
       # Some fancy rearranging.
       # [a, b, c, d, e] -> [d, b, a, c, e]
-      # [a, b, c, d] -> [c, a, b, d]
+      # [a, b, c, d]    -> [c, a, b, d]
       def middlate(arr)
-        a = []
-        (0...arr.length).each do |e|
-          if (arr.length + e).odd?
-            a[0.5 * (arr.length + e - 1)] = arr[e]
-          elsif (arr.length + e).even?
-            a[0.5 * (arr.length - e) - 1] = arr[e]
-          end
+        (0...arr.size).each.with_object([]) do |val, result|
+          idx = if (arr.size + val).odd?
+                  0.5 * (arr.size + val - 1)
+                else
+                  0.5 * (arr.size - val) - 1
+                end
+          result[idx] = arr[val]
         end
-        a
       end
 
       # Some fancy unrearranging.
       # [d, b, a, c, e] -> [a, b, c, d, e]
-      # [c, a, b, d] -> [a, b, c, d]
-      def reverseMiddlate(arr)
-        a = []
-        (0...arr.length).each do |e|
-          if e == ((arr.length / 2.0).ceil - 1)
-            a[0] = arr[e]
-          elsif e < ((arr.length / 2.0).ceil - 1)
-            a[arr.length - 2 * e - 2] = arr[e]
-          elsif e > ((arr.length / 2.0).ceil - 1)
-            a[2 * e - arr.length + 1] = arr[e]
+      # [c, a, b, d]    -> [a, b, c, d]
+      def reverse_middlate(arr)
+        (0...arr.size).each.with_object([]) do |val, result|
+          idx = case val <=> ((arr.size / 2.0).ceil - 1)
+          when -1
+            arr.size - (val * 2) - 2
+          when 0
+            0
+          when 1
+            (2 * val) - arr.size.succ
           end
+          result[idx] = arr[val]
         end
-        a
       end
 
       # Handle middlate requests
-      def handleMiddlate(arr, d)
-        n = Pxlsrt::Helpers.isNumeric?(d)
-        if n && d.to_i > 0
-          k = arr
-          (0...d.to_i).each do |_l|
-            k = middlate(k)
-          end
-          return k
-        elsif n && d.to_i < 0
-          k = arr
-          (0...d.to_i.abs).each do |_l|
-            k = reverseMiddlate(k)
-          end
-          return k
-        elsif (d == '') || (d == 'middle')
-          return middlate(arr)
-        else
+      def handle_middlate(arr, middle)
+        middle_int = Integer(middle, exception: false)
+        if [nil, 0].include?(middle_int)
+          return middlate(arr) if middle.to_s[/^(middle|)$/]
           return arr
+        end
+        middlate_method = "#{middle_int < 0 ? 'reverse_' : ''}middlate"
+        (0...middle_int.abs).each.with_object([]) do |_, arr|
+          arr = send(middlate_method, arr)
         end
       end
 
