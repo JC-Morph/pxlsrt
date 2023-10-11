@@ -42,7 +42,7 @@ module Pxlsrt
         @png = input
         input_type_error unless [String, ChunkyPNG::Image].include?(png.class)
         return initialize_png unless png.class == String
-        input_existence_error unless File.exists?(png)
+        input_existence_error unless File.exist?(png)
         verbose 'Getting image from file...'
         input_png_error unless Pxlsrt::Colors.isPNG?(png)
         @png = ChunkyPNG::Image.from_file(png)
