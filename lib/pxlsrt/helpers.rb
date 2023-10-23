@@ -42,7 +42,7 @@ module Pxlsrt
         band = band.group_by {|idx| idx }
         keys = band.keys
       end
-      sorted = Pxlsrt::Colors.pixelSort(keys, options[:method], parse_reverse)
+      sorted = Pxlsrt::Colors.pixel_sort(keys, options[:method], parse_reverse)
       sorted = sorted.flat_map {|idx| band[idx] } if options[:smooth]
       Pxlsrt::Lines.handle_middlate(sorted, options[:middle])
     end
