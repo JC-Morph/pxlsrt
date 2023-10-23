@@ -9,7 +9,8 @@ module Pxlsrt
     class << self
       def suite(input, output_filename, opts = {})
         def_options(opts)
-        check_input(input)
+        prepare_input(input)
+
         start_time = Time.now
         call.save output_filename
         end_time   = Time.now
@@ -38,20 +39,27 @@ module Pxlsrt
         raise 'Bad options'
       end
 
-      def check_input(input)
+      def prepare_input(input)
         @png = input
         input_type_error unless [String, ChunkyPNG::Image].include?(png.class)
         return initialize_png unless png.class == String
         input_existence_error unless File.exist?(png)
         verbose 'Getting image from file...'
-        input_png_error unless Pxlsrt::Colors.isPNG?(png)
-        @png = ChunkyPNG::Image.from_file(png)
         initialize_png
       end
 
       def initialize_png
+        check_png_integrity
+        @png = ChunkyPNG::Image.from_file(png)
         verbose 'Creating Pxlsrt::Image object'
         @png = Pxlsrt::Image.new(png)
+      end
+
+      # Check if file is a PNG image. ChunkyPNG only works with PNG images.
+      # Eventually, I might use conversion tools to add support, but not right
+      # now.
+      def check_png_integrity
+        input_png_error unless File.open(png, 'rb').read(9).include?('PNG')
       end
 
       def input_type_error

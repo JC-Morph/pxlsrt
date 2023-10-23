@@ -32,13 +32,6 @@ module Pxlsrt
       [ChunkyPNG::Color.r(pxl), ChunkyPNG::Color.g(pxl), ChunkyPNG::Color.b(pxl), ChunkyPNG::Color.a(pxl)]
     end
 
-    # Check if file is a PNG image. ChunkyPNG only works with PNG images.
-    # Eventually, I might use conversion tools to add support, but not right
-    # now.
-    def self.isPNG?(path)
-      File.open(path, 'rb').read(9).include?('PNG')
-    end
-
     # Averages an array of RGB-like arrays.
     def self.colorAverage(ca, chunky = false)
       return ca.first if ca.length == 1
